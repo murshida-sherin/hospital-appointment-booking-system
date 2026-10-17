@@ -1,0 +1,371 @@
+{% extends "doctor/doctor_base.html" %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block profile_active %}
+active
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.container{
+    width:95%;
+    margin:auto;
+    padding:30px 0;
+}
+
+/* ================= HEADER ================= */
+
+.page-header{
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.page-header h2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:22px;
+    font-weight:600;
+    margin-bottom:8px;
+}
+
+.page-header h2 i{
+    font-size:22px;
+}
+
+.page-header p{
+    margin:0;
+    opacity:.9;
+    font-size:14px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.header-avatar{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    overflow:hidden;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.header-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.header-avatar i{
+    font-size:42px;
+    color:#0d6efd;
+}
+
+.header-info{
+    text-align:right;
+}
+
+.header-info h4{
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.header-info span{
+    display:block;
+    font-size:14px;
+}
+
+/* ================= CARD ================= */
+
+.edit-card{
+    background:white;
+    border-radius:22px;
+    padding:30px;
+    box-shadow:0 5px 18px rgba(0,0,0,.06);
+}
+
+/* ================= PROFILE IMAGE ================= */
+
+.image-preview{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.image-preview img{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #eef5ff;
+}
+
+.image-preview i{
+    font-size:120px;
+    color:#0d6efd;
+}
+
+/* ================= FORM ================= */
+
+.form-group{
+    margin-bottom:22px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:600;
+    color:#334155;
+}
+
+.form-control{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid #dbe2ea;
+    border-radius:12px;
+    background:#f8fafc;
+    transition:.3s;
+    font-family:'Manrope',sans-serif;
+}
+
+.form-control:focus{
+    outline:none;
+    background:white;
+    border-color:#0d6efd;
+    box-shadow:0 0 0 4px rgba(13,110,253,.08);
+}
+
+/* ================= BUTTONS ================= */
+
+.button-row{
+    margin-top:30px;
+    display:flex;
+    gap:15px;
+}
+
+.btn-save{
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.btn-back{
+    background:#eef2f7;
+    color:#334155;
+    text-decoration:none;
+    border-radius:10px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.btn-save:hover,
+.btn-back:hover{
+    transform:translateY(-2px);
+}
+
+@media(max-width:768px){
+
+.page-header{
+    flex-direction:column;
+    text-align:center;
+    gap:20px;
+}
+
+.button-row{
+    flex-direction:column;
+}
+
+}
+
+.success-alert{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    border:1px solid #86efac;
+
+    padding:14px 18px;
+
+    border-radius:12px;
+
+    margin-bottom:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.success-alert i{
+
+    font-size:18px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="page-header">
+
+<div>
+
+<h2>
+
+<i class="bi bi-pencil-square"></i>
+
+Edit Profile
+
+</h2>
+
+<p>
+
+Update your personal information.
+
+</p>
+
+</div>
+
+<div class="header-right">
+
+<div class="header-avatar">
+
+{% if doctor.image %}
+
+<img src="{{ doctor.image.url }}">
+
+{% else %}
+
+<i class="bi bi-person-circle"></i>
+
+{% endif %}
+
+</div>
+
+<div class="header-info">
+
+<strong> {{ doctor.name }}</strong>
+
+<h4>{{ doctor.department.name }}</h4>
+
+<span>{{ doctor.hospital.name }}</span>
+
+<span>{{ doctor.qualification }}</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="edit-card">
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="image-preview">
+
+{% if doctor.image %}
+
+<img src="{{ doctor.image.url }}">
+
+{% else %}
+
+<i class="bi bi-person-circle"></i>
+
+{% endif %}
+
+</div>
+
+<div class="form-group">
+
+<label>Profile Photo</label>
+
+{{ form.image }}
+
+</div>
+
+<div class="form-group">
+
+<label>Phone Number</label>
+
+{{ form.phone }}
+
+</div>
+
+<div class="form-group">
+
+<label>Email Address</label>
+
+{{ form.email }}
+
+</div>
+
+<div class="button-row">
+
+<button type="submit" class="btn-save">
+
+<i class="bi bi-check-circle-fill"></i>
+
+Save Changes
+
+</button>
+
+<a href="{% url 'doctor_profile' %}" class="btn-back">
+
+<i class="bi bi-arrow-left-circle"></i>
+
+Back
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

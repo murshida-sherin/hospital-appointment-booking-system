@@ -1,0 +1,839 @@
+{% extends "doctor/doctor_base.html" %}
+
+{% block title %}
+Doctor Dashboard
+{% endblock %}
+
+{% block dashboard_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Doctor Dashboard
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#f4f7fc;
+    color:#1e293b;
+}
+
+.container{
+    width:95%;
+    margin:auto;
+    padding:30px 0;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+
+    color:white;
+
+    padding:22px;
+
+    border-radius:22px;
+
+    margin-bottom:30px;
+
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.dashboard-header h1{
+
+    font-size:24px;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+}
+
+.dashboard-header p{
+
+    margin:0;
+
+    opacity:.9;
+
+    font-size:15px;
+
+}
+
+.header-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.header-avatar{
+
+    width:78px;
+
+    height:78px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.header-avatar img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.header-avatar i{
+
+    font-size:42px;
+
+    color:#0d6efd;
+
+}
+
+.header-info{
+
+    text-align:right;
+
+}
+
+.header-info h4{
+
+    font-size:18px;
+
+    margin-bottom:6px;
+
+}
+
+.header-info span{
+
+    display:block;
+
+    font-size:14px;
+
+    opacity:.95;
+
+}
+
+/* ===========================
+SUMMARY
+=========================== */
+
+.summary-row{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.top-card{
+
+    width:100%;
+
+    min-height:120px;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.top-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.top-card h4{
+
+    font-size:13px;
+
+    color:#64748b;
+
+}
+
+.top-card h2{
+
+    font-size:28px;
+
+    font-weight:700;
+
+     color:#0f172a;
+
+}
+
+.top-card i{
+
+    font-size:30px;
+
+    opacity:.9;
+
+}
+
+.total-card{
+
+    border-left:5px solid #0d6efd;
+
+}
+
+.completed-card{
+
+    border-left:5px solid #16a34a;
+
+}
+
+.remaining-card{
+
+    border-left:5px solid #f97316;
+
+}
+
+.missed-card{
+
+    border-left:5px solid #dc2626;
+
+}
+
+/* ===========================
+CARD
+=========================== */
+
+.card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:28px;
+
+    box-shadow:0 4px 20px rgba(0,0,0,.06);
+
+    margin-bottom:30px;
+
+}
+
+.card h2{
+
+    font-size:18px;
+
+    margin-bottom:25px;
+
+    color:#0f172a;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+/* ===========================
+TABLE
+=========================== */
+
+.table-container{
+
+    overflow-x:auto;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+thead{
+
+    background:#0d6efd;
+
+}
+
+thead th{
+
+    color:white;
+
+    padding:18px;
+
+    text-align:center;
+
+    font-size:14px;
+
+}
+
+tbody td{
+
+    padding:18px;
+
+    border-bottom:1px solid #eef2f7;
+
+    text-align:center;
+
+}
+
+tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+/* ===========================
+STATUS
+=========================== */
+
+.status{
+
+    padding:8px 16px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+.status-booked{
+
+    background:#dbeafe;
+
+    color:#2563eb;
+
+}
+
+.status-completed{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.status-rescheduled{
+
+    background:#ffedd5;
+
+    color:#ea580c;
+
+}
+
+.status-missed{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+.btn{
+
+    padding:3px 7px;
+
+    border:none;
+
+    border-radius:8px;
+
+    color:white;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:.3s;
+
+}
+
+.btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.btn-success{
+
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+
+}
+
+.btn-danger{
+
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+
+}
+
+@media(max-width:900px){
+
+.summary-row{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.dashboard-header{
+
+flex-direction:column;
+
+gap:20px;
+
+text-align:center;
+
+}
+
+.header-right{
+
+flex-direction:column;
+
+}
+
+}
+
+@media(max-width:600px){
+
+.summary-row{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+.date-form{
+    display:flex;
+    gap:15px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.date-form input{
+    max-width:220px;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="dashboard-header">
+
+<div class="header-left">
+
+<h1>
+
+Doctor Dashboard
+
+</h1>
+
+<p>
+
+Welcome back
+
+</p>
+
+<div style="
+margin-top:15px;
+display:inline-block;
+padding:8px 15px;
+background:rgba(255,255,255,.15);
+border-radius:30px;
+font-size:14px;
+font-weight:600;
+">
+
+<i class="bi bi-calendar-event"></i>
+
+Viewing :
+
+{{ selected_date|date:"d M Y" }}
+
+</div>
+
+</div>
+
+<div class="header-right">
+
+<div class="header-avatar">
+
+{% if doctor.image %}
+
+<img src="{{ doctor.image.url }}">
+
+{% else %}
+
+<i class="bi bi-person-circle"></i>
+
+{% endif %}
+
+</div>
+
+<div class="header-info">
+
+<strong> {{ doctor.name }}</strong>
+<h4>
+
+{{ doctor.department.name }}
+
+</h4>
+
+<span>
+
+{{ doctor.hospital.name }}
+
+</span>
+
+<span>
+
+{{ doctor.qualification }}
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="summary-row">
+
+<div class="top-card total-card">
+
+<div>
+
+<h4>Today's Appointments</h4>
+
+<h2>{{ total_appointments }}</h2>
+
+</div>
+
+<i class="bi bi-calendar2-check"></i>
+
+</div>
+
+<div class="top-card completed-card">
+
+<div>
+
+<h4>Completed</h4>
+
+<h2>{{ completed_count }}</h2>
+
+</div>
+
+<i class="bi bi-check-circle"></i>
+
+</div>
+
+<div class="top-card remaining-card">
+
+<div>
+
+<h4>Remaining</h4>
+
+<h2>{{ remaining_count }}</h2>
+
+</div>
+
+<i class="bi bi-hourglass-split"></i>
+
+</div>
+
+<div class="top-card missed-card">
+
+<div>
+
+<h4>Missed</h4>
+
+<h2>{{ missed_count }}</h2>
+
+</div>
+
+<i class="bi bi-person-x"></i>
+
+</div>
+
+</div>
+
+<div class="card">
+
+    <h2>
+        <i class="bi bi-calendar-event"></i>
+        Select Date
+    </h2>
+
+    <form method="GET" class="date-form">
+
+        <input
+            type="date"
+            name="date"
+            value="{{ selected_date|date:'Y-m-d' }}">
+
+        <button
+            class="btn btn-primary"
+            type="submit">
+
+            <i class="bi bi-search"></i>
+
+            View
+
+        </button>
+
+    </form>
+
+</div>
+
+<div class="card">
+
+<h2>
+
+<i class="bi bi-calendar-event"></i>
+
+Appointments - {{ selected_date|date:"d M Y" }}
+
+</h2>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Token</th>
+
+<th>Patient</th>
+
+<th>Time</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in appointments %}
+
+<tr>
+
+    <td>{{ a.token_number }}</td>
+
+    <td>{{ a.patient.name }}</td>
+
+    <td>{{ a.time_slot|time:"h:i A" }}</td>
+
+    <td>
+
+        {% if a.status == "Booked" %}
+
+            <span class="status status-booked">
+                <i class="bi bi-journal-check"></i>
+                Booked
+            </span>
+
+        {% elif a.status == "Completed" %}
+
+            <span class="status status-completed">
+                <i class="bi bi-check-circle"></i>
+                Completed
+            </span>
+
+        {% elif a.status == "Rescheduled" %}
+
+            <span class="status status-rescheduled">
+                <i class="bi bi-arrow-repeat"></i>
+                Rescheduled
+            </span>
+
+        {% elif a.status == "Missed" %}
+
+            <span class="status status-missed">
+                <i class="bi bi-person-x"></i>
+                Missed
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {% if a.status == "Booked" or a.status == "Rescheduled" %}
+
+        <div style="
+            display:flex;
+            justify-content:center;
+            gap:8px;
+        ">
+
+            <form method="POST"
+                  action="{% url 'doctor_complete_appointment' a.id %}"
+                  style="display:inline;">
+
+                {% csrf_token %}
+
+                <button
+                    class="btn btn-success"
+                    title="Complete">
+
+                    <i class="bi bi-check-circle"></i>
+
+                </button>
+
+            </form>
+
+            <form method="POST"
+                  action="{% url 'doctor_miss_appointment' a.id %}"
+                  style="display:inline;">
+
+                {% csrf_token %}
+
+                <button
+                    class="btn btn-danger"
+                    title="Missed">
+
+                    <i class="bi bi-person-x"></i>
+
+                </button>
+
+            </form>
+
+        </div>
+
+        {% else %}
+
+            <span style="
+                color:#94a3b8;
+                font-weight:600;
+                font-size:18px;
+            ">
+                —
+            </span>
+
+        {% endif %}
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="5">
+
+<div style="
+padding:40px;
+text-align:center;
+">
+
+<i class="bi bi-calendar2-x"
+style="
+font-size:55px;
+color:#0d6efd;
+"></i>
+
+<h4 style="
+margin-top:20px;
+font-weight:700;
+">
+
+No Appointments Today
+
+</h4>
+
+<p style="
+color:#64748b;
+margin-top:8px;
+">
+
+There are no appointments assigned for today.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

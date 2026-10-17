@@ -1,0 +1,932 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Appointment Management
+{% endblock %}
+
+{% block appointment_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Appointment Management
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.admin-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.admin-profile i{
+
+    font-size:34px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.main-card{
+
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.search-box{
+
+    width:300px;
+
+}
+
+.table{
+
+    margin-top:25px;
+
+}
+
+.table thead{
+
+    background:#eef4ff;
+
+}
+
+.table th{
+
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+.action-btn{
+
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    margin-right:4px;
+
+}
+
+.badge{
+
+    font-size:13px;
+    padding:8px 12px;
+
+}
+
+.token-badge{
+
+    background:#0d6efd;
+    color:white;
+    font-weight:600;
+    border-radius:20px;
+    padding:6px 12px;
+
+}
+
+h3 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+<div class="header-content">
+
+    <div>
+
+        <h1>
+
+            <i class="bi bi-journal-medical"></i>
+
+            Appointment Management
+
+        </h1>
+
+        <p>
+
+            Manage patient appointments and update appointment status.
+
+        </p>
+
+    </div>
+
+    <div class="admin-profile">
+
+        <span>Administrator</span>
+
+        <i class="bi bi-person-circle"></i>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+{{ message }}
+
+<button
+class="btn-close"
+data-bs-dismiss="alert">
+
+</button>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+<div class="main-card">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+<i class="bi bi-list-check"></i>
+
+Appointments
+
+</h3>
+
+<div class="search-box">
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="bi bi-search"></i>
+
+</span>
+
+<input
+type="text"
+id="appointmentSearch"
+class="form-control"
+placeholder="Search Appointment...">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<form method="GET" class="row g-3 mt-3 mb-3">
+
+<div class="col-md-2">
+
+<select
+name="status"
+class="form-select">
+
+<option value="">All Status</option>
+
+<option value="Booked"
+{% if selected_status == "Booked" %}selected{% endif %}>
+
+Booked
+
+</option>
+
+<option value="Completed"
+{% if selected_status == "Completed" %}selected{% endif %}>
+
+Completed
+
+</option>
+
+<option value="Cancelled"
+{% if selected_status == "Cancelled" %}selected{% endif %}>
+
+Cancelled
+
+</option>
+
+<option value="Rescheduled"
+{% if selected_status == "Rescheduled" %}selected{% endif %}>
+
+Rescheduled
+
+</option>
+
+<option value="Missed"
+{% if selected_status == "Missed" %}selected{% endif %}>
+
+Missed
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<select
+name="hospital"
+class="form-select">
+
+<option value="">All Hospitals</option>
+
+{% for hospital in hospitals %}
+
+<option
+value="{{ hospital.id }}"
+{% if selected_hospital == hospital.id|stringformat:"s" %}selected{% endif %}>
+
+{{ hospital.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<select
+name="department"
+class="form-select">
+
+<option value="">All Departments</option>
+
+{% for department in departments %}
+
+<option
+value="{{ department.id }}"
+{% if selected_department == department.id|stringformat:"s" %}selected{% endif %}>
+
+{{ department.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<select
+name="doctor"
+class="form-select">
+
+<option value="">All Doctors</option>
+
+{% for doctor in doctors %}
+
+<option
+value="{{ doctor.id }}"
+{% if selected_doctor == doctor.id|stringformat:"s" %}selected{% endif %}>
+
+{{ doctor.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<input
+type="date"
+name="date"
+value="{{ selected_date }}"
+class="form-control">
+
+</div>
+
+<div class="col-md-2 d-flex gap-2">
+
+<button
+type="submit"
+class="btn btn-primary w-100">
+
+<i class="bi bi-funnel"></i>
+
+Filter
+
+</button>
+
+<a
+href="{% url 'appointment_management' %}"
+class="btn btn-outline-secondary">
+
+<i class="bi bi-arrow-clockwise"></i>
+
+</a>
+
+</div>
+
+</form>
+
+<table
+class="table table-hover align-middle"
+id="appointmentTable">
+
+<thead>
+
+<tr>
+
+<th onclick="sortTable(0)">Patient</th>
+
+<th onclick="sortTable(1)">Doctor</th>
+
+<th onclick="sortTable(2)">Hospital</th>
+
+<th onclick="sortTable(3)">Department</th>
+
+<th>Date</th>
+
+<th>Time</th>
+
+<th>Token</th>
+
+<th>Status</th>
+
+<th width="190">
+
+Actions
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in appointments %}
+
+<tr>
+
+<td>
+
+<strong>
+
+{{ a.patient.name }}
+
+</strong>
+
+</td>
+
+<td>
+
+{{ a.doctor.name }}
+
+</td>
+
+<td>
+
+{{ a.doctor.hospital.name }}
+
+</td>
+
+<td>
+
+{{ a.doctor.department.name }}
+
+</td>
+
+<td>
+
+{{ a.appointment_date }}
+
+</td>
+
+<td>
+
+{{ a.time_slot }}
+
+</td>
+
+<td>
+
+<span class="token-badge">
+
+{{ a.token_number }}
+
+</span>
+
+</td>
+
+<td>
+
+{% if a.status == "Booked" %}
+
+<span class="badge bg-primary">
+
+<i class="bi bi-journal-check"></i>
+
+Booked
+
+</span>
+
+{% elif a.status == "Completed" %}
+
+<span class="badge bg-success">
+
+<i class="bi bi-check-circle"></i>
+
+Completed
+
+</span>
+
+{% elif a.status == "Cancelled" %}
+
+<span class="badge bg-secondary">
+
+<i class="bi bi-x-circle"></i>
+
+Cancelled
+
+</span>
+
+{% elif a.status == "Rescheduled" %}
+
+<span class="badge bg-warning text-dark">
+
+<i class="bi bi-arrow-repeat"></i>
+
+Rescheduled
+
+</span>
+
+{% elif a.status == "Missed" %}
+
+<span class="badge bg-danger">
+
+<i class="bi bi-person-x"></i>
+
+Missed
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if a.status == "Booked" or a.status == "Rescheduled" %}
+
+<form method="POST"
+action="{% url 'complete_appointment' a.id %}"
+style="display:inline;">
+
+{% csrf_token %}
+
+<button
+class="btn btn-success action-btn"
+title="Complete">
+
+<i class="bi bi-check-circle"></i>
+
+</button>
+
+</form>
+
+<form method="POST"
+action="{% url 'miss_appointment' a.id %}"
+style="display:inline;">
+
+{% csrf_token %}
+
+<button
+class="btn btn-danger action-btn"
+title="Missed">
+
+<i class="bi bi-person-x"></i>
+
+</button>
+
+</form>
+
+<form method="POST"
+action="{% url 'cancel_appointment_admin' a.id %}"
+style="display:inline;">
+
+{% csrf_token %}
+
+<button
+class="btn btn-secondary action-btn"
+title="Cancel">
+
+<i class="bi bi-x-circle"></i>
+
+</button>
+
+</form>
+
+{% else %}
+
+<span class="text-muted fw-bold">
+
+—
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="9">
+
+<div class="text-center py-5">
+
+<i class="bi bi-journal-medical display-2 text-secondary"></i>
+
+<h4 class="mt-3">
+
+No Appointments Found
+
+</h4>
+
+<p class="text-muted">
+
+There are currently no appointments available.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% if appointments.has_other_pages %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if appointments.has_previous %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ appointments.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in appointments.paginator.page_range %}
+
+<li class="page-item {% if appointments.number == page %}active{% endif %}">
+
+<a
+class="page-link"
+href="?page={{ page }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if appointments.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ appointments.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+//-------------------------------------
+// Live Search
+//-------------------------------------
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const search = document.getElementById("appointmentSearch");
+
+    if(search){
+
+        search.addEventListener("keyup", function(){
+
+            let value = this.value.toLowerCase();
+
+            let rows = document.querySelectorAll("#appointmentTable tbody tr");
+
+            rows.forEach(function(row){
+
+                row.style.display = row.innerText.toLowerCase().includes(value)
+                    ? ""
+                    : "none";
+
+            });
+
+        });
+
+    }
+
+});
+
+
+//-------------------------------------
+// Table Sorting
+//-------------------------------------
+
+function sortTable(column){
+
+    let table = document.getElementById("appointmentTable");
+
+    let switching = true;
+
+    let direction = "asc";
+
+    while(switching){
+
+        switching = false;
+
+        let rows = table.rows;
+
+        for(let i=1;i<rows.length-1;i++){
+
+            let shouldSwitch = false;
+
+            let x = rows[i].getElementsByTagName("TD")[column];
+
+            let y = rows[i+1].getElementsByTagName("TD")[column];
+
+            if(!x || !y){
+
+                continue;
+
+            }
+
+            if(direction === "asc"){
+
+                if(x.innerText.toLowerCase() > y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+            else{
+
+                if(x.innerText.toLowerCase() < y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if(shouldSwitch){
+
+            rows[i].parentNode.insertBefore(rows[i+1], rows[i]);
+
+            switching = true;
+
+        }
+
+        else{
+
+            if(direction === "asc"){
+
+                direction = "desc";
+
+                switching = true;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+//-------------------------------------
+// SweetAlert Confirmation
+//-------------------------------------
+
+document.querySelectorAll("form").forEach(function(form){
+
+    form.addEventListener("submit", function(e){
+
+        const action = form.action;
+
+        let title = "";
+        let text = "";
+        let icon = "question";
+        let color = "#0d6efd";
+
+        if(action.includes("complete")){
+
+            title = "Complete Appointment?";
+            text = "This appointment will be marked as Completed.";
+            icon = "success";
+            color = "#198754";
+
+        }
+
+        else if(action.includes("miss")){
+
+            title = "Mark as Missed?";
+            text = "This appointment will be marked as Missed.";
+            icon = "warning";
+            color = "#dc3545";
+
+        }
+
+        else if(action.includes("cancel")){
+
+            title = "Cancel Appointment?";
+            text = "This appointment will be cancelled.";
+            icon = "warning";
+            color = "#6c757d";
+
+        }
+
+        else{
+
+            return;
+
+        }
+
+        e.preventDefault();
+
+        Swal.fire({
+
+            title: title,
+
+            text: text,
+
+            icon: icon,
+
+            showCancelButton: true,
+
+            confirmButtonColor: color,
+
+            cancelButtonColor: "#0d6efd",
+
+            confirmButtonText: "Yes",
+
+            cancelButtonText: "No"
+
+        }).then((result)=>{
+
+            if(result.isConfirmed){
+
+                form.submit();
+
+            }
+
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

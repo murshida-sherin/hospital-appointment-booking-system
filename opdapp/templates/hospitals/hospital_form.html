@@ -1,0 +1,257 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block page_title %}
+{{ title }}
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.form-card{
+    background:#fff;
+    border-radius:22px;
+    padding:35px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+.section-title{
+    margin-bottom:30px;
+}
+
+.form-label{
+    font-weight:600;
+    color:#334155;
+}
+
+.form-control,
+.form-select{
+    border-radius:12px;
+    padding:12px;
+}
+
+textarea.form-control{
+    min-height:140px;
+    resize:vertical;
+}
+
+.preview{
+    width:250px;
+    height:200px;
+    object-fit:cover;
+    border-radius:18px;
+    border:3px dashed #dbeafe;
+    background:#f8fbff;
+}
+
+.image-box{
+    text-align:center;
+}
+
+.button-group{
+    margin-top:35px;
+    display:flex;
+    gap:15px;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+<div class="section-title">
+
+<h2>
+
+<i class="bi bi-hospital text-primary"></i>
+
+{{ title }}
+
+</h2>
+
+<p class="text-muted">
+
+Create or update hospital information.
+
+</p>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="row">
+
+<div class="col-lg-8">
+
+<div class="row">
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+Hospital Name
+
+</label>
+
+{{ form.name }}
+
+</div>
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+City
+
+</label>
+
+{{ form.city }}
+
+</div>
+
+<div class="col-12 mb-4">
+
+<label class="form-label">
+
+Address
+
+</label>
+
+{{ form.address }}
+
+<small class="text-muted">
+
+<i class="bi bi-geo-alt-fill text-primary"></i>
+
+Latitude and longitude will be generated automatically from the address.
+
+</small>
+
+</div>
+
+<div class="col-12 mb-4">
+
+<label class="form-label">
+
+Location Name
+
+</label>
+
+{{ form.location_name }}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="image-box">
+
+{% if form.instance.image %}
+
+<img
+src="{{ form.instance.image.url }}"
+id="preview"
+class="preview">
+
+{% else %}
+
+<img
+src="https://placehold.co/250x200?text=Hospital"
+id="preview"
+class="preview">
+
+{% endif %}
+
+<div class="mt-4">
+
+<label class="form-label">
+
+Hospital Image
+
+</label>
+
+{{ form.image }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<button
+type="submit"
+class="btn btn-primary px-4">
+
+<i class="bi bi-check-circle"></i>
+
+Save Hospital
+
+</button>
+
+<a
+href="{% url 'hospital_management' %}"
+class="btn btn-secondary px-4">
+
+<i class="bi bi-arrow-left"></i>
+
+Back
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+const imageInput=document.getElementById("id_image");
+
+if(imageInput){
+
+imageInput.addEventListener("change",function(e){
+
+const file=e.target.files[0];
+
+if(file){
+
+const reader=new FileReader();
+
+reader.onload=function(event){
+
+document.getElementById("preview").src=event.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+});
+
+}
+
+</script>
+
+{% endblock %}

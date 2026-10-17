@@ -1,0 +1,256 @@
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+    .register-wrapper{
+        min-height:85vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:40px 20px;
+        font-family:'Manrope',sans-serif;
+    }
+
+    .register-card{
+        width:100%;
+        max-width:400px;
+        background:white;
+        border-radius:28px;
+        padding:32px;
+        box-shadow:0 10px 35px rgba(0,0,0,0.08);
+    }
+
+    .register-top{
+        text-align:center;
+        margin-bottom:25px;
+    }
+
+    .register-icon{
+        width:72px;
+        height:72px;
+        background:#e8f1ff;
+        border-radius:50%;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        margin:auto;
+        margin-bottom:22px;
+    }
+
+    .register-icon i{
+        font-size:30px;
+        color:#0d6efd;
+    }
+
+    .register-top h2{
+        font-size:28px;
+        margin-bottom:10px;
+        color:#0f172a;
+    }
+
+    .register-top p{
+        color:#64748b;
+        font-size:15px;
+    }
+
+    .alert-box{
+        background:#fee2e2;
+        color:#dc2626;
+        padding:15px;
+        border-radius:14px;
+        margin-bottom:22px;
+        text-align:center;
+        font-weight:600;
+    }
+
+    .form-group{
+        margin-bottom:22px;
+    }
+
+    .form-group label{
+        display:block;
+        margin-bottom:10px;
+        font-weight:600;
+        color:#1e293b;
+    }
+
+    .input-box{
+        position:relative;
+    }
+
+    .input-box i{
+        position:absolute;
+        left:16px;
+        top:50%;
+        transform:translateY(-50%);
+        color:#64748b;
+        font-size:16px;
+    }
+
+    .input-box input{
+        width:100%;
+        padding:12px 12px 12px 42px;
+        border:1px solid #dbe2ea;
+        border-radius:14px;
+        font-size:15px;
+        background:#f8fafc;
+        transition:0.3s;
+        font-family:'Manrope',sans-serif;
+    }
+
+    .input-box input:focus{
+        outline:none;
+        border-color:#0d6efd;
+        background:white;
+        box-shadow:0 0 0 4px rgba(13,110,253,0.08);
+    }
+
+    .register-btn{
+        width:100%;
+        border:none;
+        padding:13px;
+        border-radius:14px;
+        background:linear-gradient(135deg,#0d6efd,#2563eb);
+        color:white;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+        transition:0.3s;
+        margin-top:8px;
+        font-family:'Manrope',sans-serif;
+    }
+
+    .register-btn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 10px 20px rgba(37,99,235,0.22);
+    }
+
+    .bottom-text{
+        text-align:center;
+        margin-top:28px;
+        color:#64748b;
+        font-size:15px;
+    }
+
+    .bottom-text a{
+        color:#0d6efd;
+        text-decoration:none;
+        font-weight:600;
+    }
+
+</style>
+
+<div class="register-wrapper">
+
+    <div class="register-card">
+
+        <div class="register-top">
+
+            <div class="register-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+
+            <h2>Create Account</h2>
+
+            <p>
+                Register to access the OPD Booking System
+            </p>
+
+        </div>
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert-box">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label>Username</label>
+
+                <div class="input-box">
+
+                    <i class="bi bi-person"></i>
+
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Enter username"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Password</label>
+
+                <div class="input-box">
+
+                    <i class="bi bi-lock"></i>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Phone Number</label>
+
+                <div class="input-box">
+
+                    <i class="bi bi-telephone"></i>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="Enter phone number"
+                        required>
+
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="register-btn">
+
+                Create Account
+
+            </button>
+
+        </form>
+
+        <div class="bottom-text">
+
+            Already have an account?
+
+            <a href="/login/">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

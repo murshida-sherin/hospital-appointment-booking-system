@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Symptom Checker</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Enter your symptoms:</label><br>
+    <input type="text" name="symptoms" required><br><br>
+
+    <!-- 🔥 MOVE GPS INPUTS HERE -->
+    <input type="hidden" name="latitude" id="lat">
+    <input type="hidden" name="longitude" id="lng">
+
+    <button type="submit">Check</button>
+</form>
+
+<!-- 🔥 SCRIPT CAN STAY OUTSIDE -->
+<script>
+navigator.geolocation.getCurrentPosition(function(position) {
+    document.getElementById("lat").value = position.coords.latitude;
+    document.getElementById("lng").value = position.coords.longitude;
+});
+</script>
+
+<hr>
+
+{% if departments %}
+    <h3>Suggested Departments:</h3>
+    <ul>
+        {% for d in departments %}
+            <li>{{ d }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Hospitals:</h4>
+<ul>
+    {% for h in hospitals %}
+        <li>
+    {{ h.name }}
+    {% if h.distance %}
+        ({{ h.distance|floatformat:2 }} km)
+    {% endif %}
+    {% if h.score %}
+        ⭐ Score: {{ h.score|floatformat:2 }}
+    {% endif %}
+</li>
+    {% empty %}
+        <li>No hospitals found</li>
+    {% endfor %}
+</ul>
+
+<h4>Doctors:</h4>
+    <ul>
+        {% for d in doctors %}
+            <li>{{ d.name }} ({{ d.hospital.name }})</li>
+        {% empty %}
+            <li>No doctors available</li>
+        {% endfor %}
+    </ul>
+    
+{% endif %}
+
+{% endblock %}

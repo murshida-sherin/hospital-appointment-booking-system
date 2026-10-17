@@ -1,0 +1,675 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Rating Management
+{% endblock %}
+
+{% block rating_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Rating Management
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.admin-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.admin-profile i{
+
+    font-size:34px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.main-card{
+
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.search-box{
+
+    width:300px;
+
+}
+
+.table{
+
+    margin-top:25px;
+
+}
+
+.table thead{
+
+    background:#eef4ff;
+
+}
+
+.table th{
+
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+.action-btn{
+
+    width:38px;
+    height:38px;
+    border-radius:10px;
+
+}
+
+.review-box{
+
+    max-width:260px;
+    white-space:normal;
+
+}
+
+.star{
+
+    color:#ffc107;
+    font-size:17px;
+
+}
+
+h3 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+<div class="header-content">
+
+    <div>
+
+        <h1>
+
+            <i class="bi bi-star-fill"></i>
+
+            Rating Management
+
+        </h1>
+
+        <p>
+
+            Manage patient reviews and ratings
+        </p>
+
+    </div>
+
+    <div class="admin-profile">
+
+        <span>Administrator</span>
+
+        <i class="bi bi-person-circle"></i>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+{{ message }}
+
+<button
+class="btn-close"
+data-bs-dismiss="alert">
+
+</button>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+<div class="main-card">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+<i class="bi bi-chat-square-heart"></i>
+
+Patient Reviews
+
+</h3>
+
+<div class="search-box">
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="bi bi-search"></i>
+
+</span>
+
+<input
+type="text"
+id="ratingSearch"
+class="form-control"
+placeholder="Search Review...">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<table
+class="table table-hover align-middle"
+id="ratingTable">
+
+<thead>
+
+<tr>
+
+<th onclick="sortTable(0)">Patient</th>
+
+<th onclick="sortTable(1)">Doctor</th>
+
+<th onclick="sortTable(2)">Hospital</th>
+
+<th>Rating</th>
+
+<th>Review</th>
+
+<th onclick="sortTable(5)">Rated On</th>
+
+<th width="90">
+
+Action
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for rating in ratings %}
+
+<tr>
+
+<td>
+
+{{ rating.user.username }}
+
+</td>
+
+<td>
+
+{{ rating.doctor.name }}
+
+</td>
+
+<td>
+
+{{ rating.doctor.hospital.name }}
+
+</td>
+
+<td>
+
+{% for i in "12345" %}
+
+{% if forloop.counter <= rating.rating %}
+
+<i class="bi bi-star-fill star"></i>
+
+{% else %}
+
+<i class="bi bi-star star"></i>
+
+{% endif %}
+
+{% endfor %}
+
+<span class="fw-bold ms-2">
+
+({{ rating.rating }})
+
+</span>
+
+</td>
+
+<td class="review-box">
+
+{% if rating.review %}
+
+{{ rating.review }}
+
+{% else %}
+
+<span class="text-muted">
+
+No Review
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ rating.created_at|date:"d M Y" }}
+
+<br>
+
+<small class="text-muted">
+
+{{ rating.created_at|time:"h:i A" }}
+
+</small>
+
+</td>
+
+<td>
+
+<button
+
+class="btn btn-danger action-btn deleteBtn"
+
+data-id="{{ rating.id }}"
+
+>
+
+<i class="bi bi-trash"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="7">
+
+<div class="text-center py-5">
+
+<i class="bi bi-star display-2 text-secondary"></i>
+
+<h4 class="mt-3">
+
+No Ratings Found
+
+</h4>
+
+<p class="text-muted">
+
+There are currently no patient reviews.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% if ratings.has_other_pages %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if ratings.has_previous %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ ratings.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in ratings.paginator.page_range %}
+
+<li class="page-item {% if ratings.number == page %}active{% endif %}">
+
+<a
+class="page-link"
+href="?page={{ page }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if ratings.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ ratings.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+//-------------------------------------
+// Live Search
+//-------------------------------------
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const search = document.getElementById("ratingSearch");
+
+    if(search){
+
+        search.addEventListener("keyup", function(){
+
+            let value = this.value.toLowerCase();
+
+            let rows = document.querySelectorAll("#ratingTable tbody tr");
+
+            rows.forEach(function(row){
+
+                row.style.display = row.innerText.toLowerCase().includes(value)
+
+                    ? ""
+
+                    : "none";
+
+            });
+
+        });
+
+    }
+
+});
+
+
+//-------------------------------------
+// SweetAlert Delete
+//-------------------------------------
+
+document.querySelectorAll(".deleteBtn").forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        let id = this.dataset.id;
+
+        Swal.fire({
+
+            title: "Delete Rating?",
+
+            text: "This review will be permanently deleted.",
+
+            icon: "warning",
+
+            showCancelButton: true,
+
+            confirmButtonColor: "#dc3545",
+
+            cancelButtonColor: "#0d6efd",
+
+            confirmButtonText: "Delete",
+
+            cancelButtonText: "Cancel"
+
+        })
+
+        .then((result)=>{
+
+            if(result.isConfirmed){
+
+                const form = document.createElement("form");
+
+                form.method = "POST";
+
+                form.action = "/admin-panel/ratings/delete/" + id + "/";
+
+                const csrf = document.createElement("input");
+
+                csrf.type = "hidden";
+
+                csrf.name = "csrfmiddlewaretoken";
+
+                csrf.value = "{{ csrf_token }}";
+
+                form.appendChild(csrf);
+
+                document.body.appendChild(form);
+
+                form.submit();
+
+            }
+
+        });
+
+    });
+
+});
+
+
+//-------------------------------------
+// Table Sorting
+//-------------------------------------
+
+function sortTable(column){
+
+    let table = document.getElementById("ratingTable");
+
+    let switching = true;
+
+    let direction = "asc";
+
+    while(switching){
+
+        switching = false;
+
+        let rows = table.rows;
+
+        for(let i=1;i<rows.length-1;i++){
+
+            let shouldSwitch = false;
+
+            let x = rows[i].getElementsByTagName("TD")[column];
+
+            let y = rows[i+1].getElementsByTagName("TD")[column];
+
+            if(!x || !y){
+
+                continue;
+
+            }
+
+            if(direction === "asc"){
+
+                if(x.innerText.toLowerCase() > y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+            else{
+
+                if(x.innerText.toLowerCase() < y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if(shouldSwitch){
+
+            rows[i].parentNode.insertBefore(
+
+                rows[i+1],
+
+                rows[i]
+
+            );
+
+            switching = true;
+
+        }
+
+        else{
+
+            if(direction === "asc"){
+
+                direction = "desc";
+
+                switching = true;
+
+            }
+
+        }
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

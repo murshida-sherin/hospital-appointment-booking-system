@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div style="
+    max-width:850px;
+    margin:40px auto;
+    padding:0 20px;
+">
+
+    <!-- PAGE HEADER -->
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:14px;
+        margin-bottom:30px;
+    ">
+
+        <div style="
+            width:58px;
+            height:58px;
+            border-radius:16px;
+            background:#eef5ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        ">
+
+            <i class="bi bi-bell-fill"
+               style="
+                color:#1e4fd8;
+                font-size:26px;
+               ">
+            </i>
+
+        </div>
+
+        <div>
+
+            <h2 style="
+                margin:0;
+                color:#1e4fd8;
+                font-size:32px;
+                font-weight:700;
+                font-family:'poppins';
+            ">
+                Notifications
+            </h2>
+
+            <p style="
+                margin-top:5px;
+                color:#666;
+                font-size:15px;
+            ">
+                Stay updated with your appointments and activities
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- NOTIFICATIONS -->
+
+    {% if notes %}
+
+        {% for n in notes %}
+
+        <div style="
+            background:white;
+            border-radius:18px;
+            padding:22px;
+            margin-bottom:18px;
+            box-shadow:0 8px 20px rgba(0,0,0,0.06);
+            transition:0.3s;
+            border-left:5px solid #1e4fd8;
+        ">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                gap:15px;
+            ">
+            <p style="
+    color:#1e4fd8;
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:8px;
+">
+
+    <i class="bi bi-hospital"
+       style="margin-right:6px;"></i>
+
+    {{ n.appointment.hospital.name }}
+
+</p>
+                <!-- MESSAGE -->
+
+                <div style="flex:1;">
+
+                    <p style="
+                        margin:0 0 10px 0;
+                        color:#333;
+                        font-size:16px;
+                        line-height:1.6;
+                        font-weight:500;
+                    ">
+                        {{ n.message }}
+                    </p>
+
+                    <p style="
+                        margin:0;
+                        color:#888;
+                        font-size:13px;
+                    ">
+                        {{ n.created_at }}
+                    </p>
+
+                </div>
+
+                <!-- ICON -->
+
+                <div style="
+                    width:46px;
+                    height:46px;
+                    border-radius:14px;
+                    background:#eef5ff;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    flex-shrink:0;
+                ">
+
+                    <i class="bi bi-bell"
+                       style="
+                        color:#1e4fd8;
+                        font-size:20px;
+                       ">
+                    </i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div style="
+            background:white;
+            border-radius:24px;
+            padding:60px 30px;
+            text-align:center;
+            box-shadow:0 8px 20px rgba(0,0,0,0.06);
+        ">
+
+            <div style="
+                width:90px;
+                height:90px;
+                border-radius:50%;
+                background:#eef5ff;
+                margin:auto;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                margin-bottom:20px;
+            ">
+
+                <i class="bi bi-bell-slash"
+                   style="
+                    color:#1e4fd8;
+                    font-size:38px;
+                   ">
+                </i>
+
+            </div>
+
+            <h3 style="
+                margin-bottom:10px;
+                color:#333;
+            ">
+                No Notifications Yet
+            </h3>
+
+            <p style="
+                color:#777;
+                font-size:15px;
+            ">
+                Your notifications will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

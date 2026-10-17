@@ -1,0 +1,1226 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block dashboard_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+{% block extra_css %}
+
+    <link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+   <style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        font-family:'Manrope', sans-serif;
+        background:#f4f7fc;
+        color:#1e293b;
+    }
+
+    .container{
+    width:100%;
+    margin-left:2px;
+    margin-right:0;
+    padding:2px 0;
+}
+
+    .section-title{
+        font-size:22px;
+        font-weight:600;
+        margin-bottom:20px;
+        color:#0f172a;
+    }
+
+    .summary-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:16px;
+
+    margin-bottom:25px;
+
+}
+
+    .summary-card{
+
+    background:white;
+
+    padding:15px;
+
+    border-radius:16px;
+
+    min-height:130px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    box-shadow:0 4px 16px rgba(0,0,0,.05);
+
+    transition:.3s;
+
+}
+
+    .summary-card:hover{
+        transform:translateY(-4px);
+    }
+
+    .summary-card::before{
+        content:'';
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:5px;
+        background:#0d6efd;
+    }
+
+    .summary-card h3{
+
+    font-size:12px;
+
+    line-height:1.3;
+
+    margin-bottom:12px;
+
+}
+
+    .summary-card p{
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+    .blue{
+        color:#0d6efd;
+    }
+
+    .green{
+        color:#16a34a;
+    }
+
+    .orange{
+        color:#ea580c;
+    }
+
+    .red{
+        color:#dc2626;
+    }
+
+    .card{
+    background:white;
+    border-radius:10px;
+    padding:0px 24px;
+    margin-bottom:15px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
+}
+
+    .card h2{
+        margin-bottom:20px;
+        font-size:20px;
+        font-weight:600;
+        color:#0f172a;
+    }
+
+    form{
+        width:100%;
+    }
+
+    label{
+        display:block;
+        margin-bottom:6px;
+        margin-top:10px;
+        font-weight:500;
+        color:#334155;
+    }
+
+    input,
+    select{
+        width:100%;
+        padding:4px 14px;
+        border:1px solid #dbe2ea;
+        border-radius:12px;
+        font-size:15px;
+        background:#f8fafc;
+        transition:0.3s;
+        font-family:'Manrope', sans-serif;
+    }
+
+    input:focus,
+    select:focus{
+        outline:none;
+        border-color:#0d6efd;
+        background:white;
+    }
+
+.btn{
+    padding:8px 16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    font-family:'Manrope', sans-serif;
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition:0.3s;
+    color:white;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    width:fit-content;
+}
+
+form button{
+    width:auto;
+}
+
+.btn i{
+    font-size:18px;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#0d6efd,#2563eb);
+}
+
+.btn-danger{
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+.btn-success{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+
+    .table-container{
+        overflow-x:auto;
+        border-radius:20px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        background:white;
+        overflow:hidden;
+    }
+
+    thead{
+        background:#0d6efd;
+    }
+
+    thead th{
+        color:white;
+        padding:18px;
+        font-size:14px;
+        font-weight:600;
+        text-align:center;
+    }
+
+    tbody td{
+        padding:18px 14px;
+        text-align:center;
+        border-bottom:1px solid #eef2f7;
+        font-size:14px;
+    }
+
+    tbody tr:hover{
+        background:#f8fbff;
+    }
+
+    .status{
+    padding:8px 16px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+
+.status-booked{
+    background:#dbeafe;
+    color:#2563eb;
+}
+
+.status-completed{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.status-cancelled{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.status-rescheduled{
+    background:#ffedd5;
+    color:#ea580c;
+}
+
+    .doctor-card{
+        background:#ffffff;
+        border-radius:18px;
+        padding:24px;
+        margin-top:20px;
+        border:1px solid #edf2f7;
+    }
+
+    .doctor-card h4{
+        font-size:18px;
+        margin-bottom:14px;
+        color:#0f172a;
+    }
+
+    .doctor-info{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:16px;
+        margin-bottom:18px;
+    }
+
+    .mini-card{
+        background:#f8fafc;
+        padding:16px;
+        border-radius:14px;
+    }
+
+    .mini-card span{
+        display:block;
+        color:#64748b;
+        font-size:13px;
+        margin-bottom:5px;
+    }
+
+    .mini-card strong{
+        font-size:18px;
+    }
+
+    ul{
+        margin-top:12px;
+        padding-left:18px;
+    }
+
+    li{
+        margin-bottom:8px;
+    }
+
+    .empty-message{
+        background:#fee2e2;
+        color:#dc2626;
+        padding:16px;
+        border-radius:14px;
+        font-weight:500;
+    }
+
+   .summary-row{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,minmax(0,1fr));
+
+    gap:14px;
+
+    margin-bottom:25px;
+
+}
+
+.top-card{
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:16px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+
+    transition:.3s;
+
+    min-width:0;
+
+}
+
+.top-card:hover{
+    transform:translateY(-5px);
+}
+
+.top-card h4{
+    font-size:15px;
+    color:#64748b;
+    margin-bottom:10px;
+}
+
+.top-card h2{
+    font-size:34px;
+    font-weight:700;
+}
+
+.top-card i{
+    font-size:40px;
+    opacity:0.85;
+}
+
+.total-card{
+    border-left:5px solid #0d6efd;
+}
+
+.missed-card{
+    border-left:6px solid #f97316;
+}
+
+
+.rescheduled-card{
+    border-left:5px solid #ea580c;
+}
+
+.completed-card{
+    border-left:5px solid #16a34a;
+}
+
+.cancelled-card{
+    border-left:5px solid #dc2626;
+}
+
+.section-heading{
+    margin-bottom:25px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.hospital-section{
+    margin-bottom:45px;
+}
+
+.hospital-header{
+    background:#0d6efd;
+    color:white;
+    padding:16px 22px;
+    border-radius:16px;
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:22px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.department-title{
+    margin:25px 0 18px;
+    font-size:18px;
+    font-weight:600;
+    color:#1e293b;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.doctor-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:25px;
+}
+
+.doctor-availability-card{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.06);
+    transition:0.3s;
+    border:1px solid #edf2f7;
+}
+
+.doctor-availability-card:hover{
+    transform:translateY(-5px);
+}
+
+.doctor-top{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.doctor-avatar{
+    width:65px;
+    height:65px;
+    background:#e8f1ff;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.doctor-avatar i{
+    font-size:28px;
+    color:#0d6efd;
+}
+
+.doctor-top h3{
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.doctor-top p{
+    color:#64748b;
+    font-size:14px;
+}
+
+.doctor-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:22px;
+}
+
+.stat-box{
+    background:#f8fafc;
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
+}
+
+.stat-box span{
+    display:block;
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:6px;
+}
+
+.stat-box strong{
+    font-size:24px;
+}
+
+.blue-text{
+    color:#0d6efd;
+}
+
+.red-text{
+    color:#dc2626;
+}
+
+.slot-section h5{
+    margin-bottom:15px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#334155;
+}
+
+.slot-wrapper{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.slot-badge{
+    background:#e8f1ff;
+    color:#0d6efd;
+    padding:10px 14px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:500;
+}
+
+.full-badge{
+    background:#fee2e2;
+    color:#dc2626;
+    padding:10px 16px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+}
+
+h1{
+    margin-bottom:35px;
+}
+
+h2{
+    margin-top:45px;
+    margin-bottom:22px;
+    font-size:30px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+form{
+    margin-bottom:35px;
+}
+
+.section-heading{
+    margin-top:60px;
+    margin-bottom:30px;
+}
+
+label{
+    margin-bottom:10px;
+    margin-top:18px;
+}
+
+.table-container{
+    margin-top:25px;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+    margin-top:20px;
+    margin-bottom:28px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+@media(max-width:768px){
+
+    .form-row{
+        grid-template-columns:1fr;
+    }
+
+}
+
+button.btn{
+    width:auto !important;
+    display:inline-flex !important;
+    padding:10px 18px !important;
+}
+
+.date-form{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.status-missed{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+
+
+h2 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+
+    padding:25px 24px;      /* Reduced height */
+
+    border-radius:22px;
+    margin-bottom:20px;
+
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+.admin-profile{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    font-size:15px;
+    font-weight:600;
+
+}
+
+.admin-profile i{
+
+    font-size:32px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    font-size:22px;
+    font-weight:600;
+
+    margin:0 0 3px 0;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.dashboard-header p{
+
+    margin:0;
+
+    font-size:15px;
+
+    opacity:.9;
+
+    line-height:1.9;
+
+}
+
+</style>
+
+{%endblock%}
+
+{%block content%}
+
+<div class="container">
+
+  
+<div class="dashboard-header">
+
+<div class="header-content">
+
+    <div>
+
+        <h1>
+
+            <i class="bi bi-speedometer2"></i>
+
+         Dashboard
+
+        </h1>
+
+        <p>
+
+            Monitor appointments, doctors and hospital activities.
+        </p>
+
+    </div>
+
+    <div class="admin-profile">
+
+        <span>Administrator</span>
+
+        <i class="bi bi-person-circle"></i>
+
+    </div>
+
+</div>
+
+</div>
+
+
+    <span style="
+        font-size:18px;
+        background:#eef5ff;
+        color:#1e4fd8;
+        padding:8px 14px;
+        border-radius:30px;
+        font-weight:600;
+    ">
+        {{ selected_date }}
+    </span>
+
+</h1>
+
+<h2> Summary</h2>
+
+<div class="summary-row">
+
+    <div class="top-card total-card">
+        <div>
+            <h4>Total Appointments</h4>
+            <h2>{{ total_appointments }}</h2>
+        </div>
+        <i class="bi bi-calendar2-check"></i>
+    </div>
+
+    <div class="top-card rescheduled-card">
+        <div>
+            <h4>Rescheduled</h4>
+            <h2>{{ rescheduled_count }}</h2>
+        </div>
+        <i class="bi bi-arrow-repeat"></i>
+    </div>
+
+    <div class="top-card completed-card">
+        <div>
+            <h4>Completed</h4>
+            <h2>{{ completed_count }}</h2>
+        </div>
+        <i class="bi bi-check-circle"></i>
+    </div>
+
+    <div class="top-card missed-card">
+        <div>
+            <h4>Missed</h4>
+            <h2>{{ missed_count }}</h2>
+        </div>
+        <i class="bi bi-person-x"></i>
+    </div>
+
+    <div class="top-card cancelled-card">
+        <div>
+            <h4>Cancelled</h4>
+            <h2>{{ cancelled_count }}</h2>
+        </div>
+        <i class="bi bi-x-circle"></i>
+    </div>
+
+</div>
+
+<div class="card">
+
+<h2>
+    <i class="bi bi-calendar-event"></i>
+    Select Date
+</h2>
+
+<form method="GET" class="date-form">
+
+    <input type="date"
+           name="date"
+           value="{{ selected_date }}">
+
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+        View
+    </button>
+
+</form>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+    <i class="bi bi-person-x"></i>
+    Mark Doctor Leave
+</h2>
+
+<form method="POST"
+      action="{% url 'mark_doctor_leave' %}">
+
+    {% csrf_token %}
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Doctor</label>
+
+            <select name="doctor_id" required>
+
+                {% for d in all_doctors %}
+
+                <option value="{{ d.id }}">
+                    {{ d.name }} ({{ d.department.name }})
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Select Date</label>
+
+            <input type="date" name="date" required>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-calendar-x"></i>
+        Mark Leave & Reschedule
+    </button>
+
+</form>
+
+</div>
+
+<div class="card">
+
+<h2>
+    <i class="bi bi-arrow-counterclockwise"></i>
+    Undo Leave
+</h2>
+
+<form method="POST"
+      action="{% url 'remove_doctor_leave' %}">
+
+    {% csrf_token %}
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Doctor</label>
+
+            <select name="doctor_id" required>
+
+                {% for d in all_doctors %}
+
+                <option value="{{ d.id }}">
+                    {{ d.name }} ({{ d.department.name }})
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Select Date</label>
+
+            <input type="date" name="date" required>
+
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        Remove Leave
+    </button>
+
+</form>
+
+</div>
+
+<h2> Appointments</h2>
+
+{% if appointments %}
+
+<table>
+
+<tr>
+    <th>Patient</th>
+    <th>Doctor</th>
+    <th>Hospital</th>
+    <th>Department</th>
+    <th>Time</th>
+    <th>Token</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for a in appointments %}
+
+<tr>
+
+    <td>{{ a.patient.name }}</td>
+    <td>{{ a.doctor.name }}</td>
+    <td>{{ a.doctor.hospital.name }}</td>
+    <td>{{ a.doctor.department.name }}</td>
+    <td>{{ a.time_slot }}</td>
+    <td>{{ a.token_number }}</td>
+
+    <td>
+
+{% if a.status == "Booked" %}
+
+    <span class="status status-booked">
+        <i class="bi bi-journal-check"></i>
+        Booked
+    </span>
+
+{% elif a.status == "Completed" %}
+
+    <span class="status status-completed">
+        <i class="bi bi-check-circle"></i>
+        Completed
+    </span>
+
+{% elif a.status == "Cancelled" %}
+
+    <span class="status status-cancelled">
+        <i class="bi bi-x-circle"></i>
+        Cancelled
+    </span>
+
+{% elif a.status == "Rescheduled" %}
+
+    <span class="status status-rescheduled">
+        <i class="bi bi-arrow-repeat"></i>
+        Rescheduled
+    </span>
+
+{% elif a.status == "Missed" %}
+
+    <span class="status status-missed">
+        <i class="bi bi-person-x"></i>
+        Missed
+    </span>
+
+{% endif %}
+
+</td>
+
+    <td>
+
+{% if a.status == "Booked" or a.status == "Rescheduled" %}
+
+<div style="
+    display:flex;
+    gap:8px;
+    justify-content:center;
+">
+
+    <!-- Complete -->
+
+    <form method="POST"
+          action="{% url 'complete_appointment' a.id %}"
+          style="display:inline;">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="btn btn-success"
+                title="Completed"
+                data-bs-toggle="tooltip">
+
+            <i class="bi bi-check-circle"></i>
+
+        </button>
+
+    </form>
+
+    <!-- Missed -->
+
+    <form method="POST"
+          action="{% url 'miss_appointment' a.id %}"
+          style="display:inline;">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="btn btn-danger"
+                title="Missed"
+                data-bs-toggle="tooltip">
+
+            <i class="bi bi-person-x"></i>
+
+        </button>
+
+    </form>
+
+    <!-- Cancel -->
+
+    <form method="POST"
+          action="{% url 'cancel_appointment_admin' a.id %}"
+          style="display:inline;">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="btn"
+                title="cancel"
+        style="
+            background:#64748b;
+            color:white;
+            border:none;
+            title="Cancelled"
+            data-bs-toggle="tooltip"
+        ">
+
+
+            <i class="bi bi-x-circle"></i>
+
+        </button>
+
+    </form>
+
+</div>
+
+{% else %}
+
+    <span style="color:#94a3b8;
+                 font-size:18px;
+                 font-weight:600;">
+        —
+    </span>
+
+{% endif %}
+
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p class="red"><b>No appointments for this date</b></p>
+
+{% endif %}
+
+<h2 class="section-heading">
+    <i class="bi bi-person-badge"></i>
+    Doctor Availability
+</h2>
+
+{% regroup doctor_data by doctor.hospital.name as hospital_list %}
+
+{% for hospital in hospital_list %}
+
+<div class="hospital-section">
+
+    <div class="hospital-header">
+        <i class="bi bi-hospital"></i>
+        {{ hospital.grouper }}
+    </div>
+
+    {% regroup hospital.list by doctor.department.name as dept_list %}
+
+    {% for dept in dept_list %}
+
+    <div class="department-title">
+        <i class="bi bi-diagram-3"></i>
+        {{ dept.grouper }}
+    </div>
+
+    <div class="doctor-grid">
+
+        {% for d in dept.list %}
+
+        <div class="doctor-availability-card">
+
+            <div class="doctor-top">
+
+                <div class="doctor-avatar">
+                    <i class="bi bi-person"></i>
+                </div>
+
+                <div>
+                    <h3> {{ d.doctor.name }}</h3>
+                    <p>{{ d.doctor.department.name }}</p>
+                </div>
+
+            </div>
+
+            <div class="doctor-stats">
+
+                <div class="stat-box">
+                    <span>Total Appointments</span>
+                    <strong>
+                    {{ d.total_appointments }}
+                    </strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Available</span>
+                    <strong class="blue-text">
+                        {{ d.available_slots|length }}
+                    </strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Completed</span>
+                    <strong class="red-text">
+                        {{ d.completed_count }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="slot-section">
+
+                <h5>
+                    <i class="bi bi-clock"></i>
+                    Available Slots
+                </h5>
+
+                <div class="slot-wrapper">
+
+                    {% for s in d.available_slots %}
+                        <span class="slot-badge">{{ s }}</span>
+                    {% empty %}
+                        <span class="full-badge">
+                            Fully Booked
+                        </span>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{%endblock%}
+
+{%block extra_js%}
+
+<script>
+var tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+);
+
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+
+{%endblock%}

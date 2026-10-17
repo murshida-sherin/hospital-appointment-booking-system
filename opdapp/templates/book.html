@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap");
+
+    .booking-container{
+        max-width:560px;
+        margin:35px auto;
+        background:white;
+        padding:28px;
+        border-radius:22px;
+        box-shadow:0 6px 22px rgba(0,0,0,0.06);
+        font-family:'Manrope',sans-serif;
+    }
+
+    .booking-header{
+        text-align:center;
+        margin-bottom:28px;
+    }
+
+    .booking-icon{
+        width:62px;
+        height:62px;
+        margin:auto;
+        margin-bottom:16px;
+        border-radius:18px;
+        background:#e8f1ff;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
+
+    .booking-icon i{
+        font-size:28px;
+        color:#0d6efd;
+    }
+
+    .booking-header h2{
+        margin:0;
+        font-size:28px;
+        color:#0f172a;
+    }
+
+    .doctor-name{
+        margin-top:8px;
+        color:#2563eb;
+        font-size:16px;
+        font-weight:600;
+    }
+
+    .alert-box{
+        background:#fee2e2;
+        color:#dc2626;
+        padding:13px;
+        border-radius:12px;
+        margin-bottom:20px;
+        font-size:14px;
+        font-weight:600;
+    }
+
+    .form-group{
+        margin-bottom:18px;
+    }
+
+    .form-group label{
+        display:block;
+        margin-bottom:8px;
+        font-size:14px;
+        font-weight:600;
+        color:#1e293b;
+    }
+
+    .form-group input,
+    .form-group select{
+        width:100%;
+        padding:12px;
+        border:1px solid #dbe2ea;
+        border-radius:12px;
+        background:#f8fafc;
+        font-size:14px;
+        font-family:'Manrope',sans-serif;
+        transition:0.3s;
+        box-sizing:border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus{
+        outline:none;
+        border-color:#0d6efd;
+        background:white;
+        box-shadow:0 0 0 4px rgba(13,110,253,0.08);
+    }
+
+    .main-btn{
+        width:100%;
+        border:none;
+        padding:12px;
+        border-radius:12px;
+        background:linear-gradient(135deg,#0d6efd,#2563eb);
+        color:white;
+        font-size:14px;
+        font-weight:600;
+        cursor:pointer;
+        transition:0.3s;
+        font-family:'Manrope',sans-serif;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:8px;
+    }
+
+    .main-btn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 8px 18px rgba(37,99,235,0.18);
+    }
+
+    .divider{
+        margin:28px 0;
+        border:none;
+        border-top:1px solid #edf2f7;
+    }
+
+    .availability-box{
+        margin-top:28px;
+        background:#f8fafc;
+        padding:16px;
+        border-radius:14px;
+        border:1px solid #edf2f7;
+    }
+
+    .availability-title{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:14px;
+        font-weight:600;
+        color:#0f172a;
+        margin-bottom:10px;
+    }
+
+    .availability-title i{
+        color:#0d6efd;
+    }
+
+    .days-list{
+        color:#64748b;
+        font-size:14px;
+        line-height:1.7;
+    }
+
+</style>
+
+<div class="booking-container">
+
+    <div class="booking-header">
+
+        <div class="booking-icon">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+
+        <h2>Book Appointment</h2>
+
+        <div class="doctor-name">
+            {{ doctor.name }}
+        </div>
+
+    </div>
+
+    {% if messages %}
+    
+    {% for message in messages %}
+        
+    {% if message.tags == "error" %}
+            <div class="alert-box">
+                {{ message }}
+            </div>
+        
+            {% endif %}
+
+    {% endfor %}
+    
+{% endif %}
+
+    <!-- DATE FORM -->
+
+    <form method="GET">
+
+        <div class="form-group">
+
+            <label>Select Appointment Date</label>
+
+            <input
+                type="date"
+                name="date"
+                id="dateInput"
+                value="{{ selected_date }}"
+                required>
+
+        </div>
+
+        <button type="submit" class="main-btn">
+
+            <i class="bi bi-search"></i>
+
+            Check Availability
+
+        </button>
+
+    </form>
+
+    {% if slots %}
+
+    <hr class="divider">
+
+    <!-- BOOK FORM -->
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input type="hidden"
+               name="date"
+               value="{{ selected_date }}">
+
+        <div class="form-group">
+
+            <label>Patient Name</label>
+
+            <input
+                type="text"
+                name="name"
+                required>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Phone Number</label>
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ request.user.userprofile.phone }}"
+                required>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Select Time Slot</label>
+
+            <select name="time" required>
+
+                <option value="">
+                    Select Time Slot
+                </option>
+
+                {% for slot in slots %}
+
+                    <option value="{{ slot }}">
+                        {{ slot }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <button type="submit" class="main-btn">
+
+            <i class="bi bi-check-circle"></i>
+
+            Confirm Booking
+
+        </button>
+
+    </form>
+
+    {% endif %}
+
+    <div class="availability-box">
+
+        <div class="availability-title">
+
+            <i class="bi bi-calendar-week"></i>
+
+            Doctor Available On
+
+        </div>
+
+        <div class="days-list">
+
+            {% for s in schedules %}
+
+                {{ s.day_of_week }}{% if not forloop.last %}, {% endif %}
+
+            {% empty %}
+
+                Not available
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const availableDays = {{ available_days|safe }};
+    const dateInput = document.getElementById("dateInput");
+
+    const today = new Date().toISOString().split("T")[0];
+
+    dateInput.setAttribute("min", today);
+
+    dateInput.addEventListener("change", function () {
+
+        const selectedDate = new Date(this.value);
+
+        const dayName = selectedDate.toLocaleDateString(
+            'en-US',
+            { weekday: 'long' }
+        );
+
+        if (!availableDays.includes(dayName)) {
+
+            alert("Doctor is not available on " + dayName);
+
+            this.value = "";
+        }
+
+    });
+
+</script>
+
+{% endblock %}

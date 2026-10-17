@@ -1,0 +1,256 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block page_title %}
+{{ title }}
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.form-card{
+
+    max-width:900px;
+    margin:auto;
+    background:white;
+    border-radius:22px;
+    padding:35px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.form-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:25px;
+    border-radius:18px;
+    margin-bottom:30px;
+
+}
+
+.form-header h2{
+
+    margin:0;
+    font-weight:600;
+
+}
+
+.form-label{
+
+    font-weight:600;
+
+}
+
+.form-control,
+.form-select{
+
+    border-radius:12px;
+    min-height:48px;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:#0d6efd;
+    box-shadow:0 0 0 .2rem rgba(13,110,253,.15);
+
+}
+
+.button-group{
+
+    display:flex;
+    justify-content:end;
+    gap:12px;
+    margin-top:30px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+<div class="form-header">
+
+<h2>
+
+<i class="bi bi-calendar-week-fill"></i>
+
+{{ title }}
+
+</h2>
+
+<p class="mb-0 mt-2">
+
+Create or update a doctor's weekly schedule.
+
+</p>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+{% if form.non_field_errors %}
+
+<div class="alert alert-danger">
+
+{{ form.non_field_errors }}
+
+</div>
+
+{% endif %}
+
+<div class="row">
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+Doctor
+
+</label>
+
+{{ form.doctor }}
+
+{% if form.doctor.errors %}
+
+<div class="text-danger small mt-1">
+
+{{ form.doctor.errors }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+Day
+
+</label>
+
+{{ form.day_of_week }}
+
+{% if form.day_of_week.errors %}
+
+<div class="text-danger small mt-1">
+
+{{ form.day_of_week.errors }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+Start Time
+
+</label>
+
+{{ form.start_time }}
+
+{% if form.start_time.errors %}
+
+<div class="text-danger small mt-1">
+
+{{ form.start_time.errors }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+End Time
+
+</label>
+
+{{ form.end_time }}
+
+{% if form.end_time.errors %}
+
+<div class="text-danger small mt-1">
+
+{{ form.end_time.errors }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="col-md-6 mb-4">
+
+<label class="form-label">
+
+Slot Duration
+
+</label>
+
+{{ form.slot_duration }}
+
+{% if form.slot_duration.errors %}
+
+<div class="text-danger small mt-1">
+
+{{ form.slot_duration.errors }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<a
+href="{% url 'schedule_management' %}"
+class="btn btn-secondary px-4">
+
+<i class="bi bi-arrow-left"></i>
+
+Back
+
+</a>
+
+<button
+type="submit"
+class="btn btn-primary px-4">
+
+<i class="bi bi-check-circle"></i>
+
+Save Schedule
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}

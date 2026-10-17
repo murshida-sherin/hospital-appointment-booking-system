@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+.rating-wrapper{
+    min-height:85vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+    font-family:'Manrope',sans-serif;
+}
+
+.rating-card{
+    width:100%;
+    max-width:400px;
+    background:white;
+    border-radius:24px;
+    padding:32px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.08);
+}
+
+.rating-top{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.rating-icon{
+    width:72px;
+    height:72px;
+    background:#e8f1ff;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+    margin-bottom:18px;
+}
+
+.rating-icon i{
+    font-size:30px;
+    color:#0d6efd;
+}
+
+.rating-top h2{
+    font-size:28px;
+    margin-bottom:8px;
+    color:#0f172a;
+}
+
+.doctor-name{
+    color:#2563eb;
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.rating-subtitle{
+    color:#64748b;
+    font-size:14px;
+}
+
+.rating-stars{
+    display:flex;
+    flex-direction:row-reverse;
+    justify-content:center;
+    gap:5px;
+    margin:25px 0;
+}
+
+.rating-stars input{
+    display:none;
+}
+
+.rating-stars label{
+    font-size:42px;
+    color:#d1d5db;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.rating-stars label:hover,
+.rating-stars label:hover~label{
+    color:#fbbf24;
+    transform:scale(1.08);
+}
+
+.rating-stars input:checked~label{
+    color:#fbbf24;
+}
+
+.review-box{
+    width:100%;
+    min-height:90px;
+    padding:13px 15px;
+    border:1px solid #dbe2ea;
+    border-radius:12px;
+    background:#f8fafc;
+    font-size:14px;
+    resize:none;
+    box-sizing:border-box;
+    transition:.3s;
+    font-family:'Manrope',sans-serif;
+}
+
+.review-box:focus{
+    outline:none;
+    border-color:#0d6efd;
+    background:white;
+    box-shadow:0 0 0 4px rgba(13,110,253,.08);
+}
+
+.button-group{
+    display:flex;
+    gap:12px;
+    margin-top:18px;
+}
+
+.cancel-btn{
+    flex:1;
+    text-decoration:none;
+}
+
+.cancel-btn button{
+    width:100%;
+    padding:13px;
+    background:white;
+    border:2px solid #dc3545;
+    color:#dc3545;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.cancel-btn button:hover{
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    flex:1;
+    border:none;
+    padding:13px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#0d6efd,#2563eb);
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+    font-family:'Manrope',sans-serif;
+}
+
+.submit-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(37,99,235,.22);
+}
+
+</style>
+
+<div class="rating-wrapper">
+
+<div class="rating-card">
+
+<div class="rating-top">
+
+<div class="rating-icon">
+<i class="bi bi-star-fill"></i>
+</div>
+
+<h2>Rate Your Visit</h2>
+
+<div class="doctor-name">
+{{ appointment.doctor.name }}
+</div>
+
+<div class="rating-subtitle">
+Share your consultation experience
+</div>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="rating-stars">
+
+<input type="radio" id="star5" name="rating" value="5" required>
+<label for="star5">★</label>
+
+<input type="radio" id="star4" name="rating" value="4">
+<label for="star4">★</label>
+
+<input type="radio" id="star3" name="rating" value="3">
+<label for="star3">★</label>
+
+<input type="radio" id="star2" name="rating" value="2">
+<label for="star2">★</label>
+
+<input type="radio" id="star1" name="rating" value="1">
+<label for="star1">★</label>
+
+</div>
+
+<textarea
+name="review"
+class="review-box"
+placeholder="Write your feedback (optional)"
+></textarea>
+
+<div class="button-group">
+
+<a href="{% url 'patient_dashboard' %}" class="cancel-btn">
+
+<button type="button">
+
+Cancel
+
+</button>
+
+</a>
+
+<button
+type="submit"
+class="submit-btn">
+
+Submit Review
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}
+
+

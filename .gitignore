@@ -1,0 +1,28 @@
+   *.env
+   __pycache__/
+   *.pyc
+   db.sqlite3
+
+   # Python compiled files
+
+**pycache**/
+*.py[cod]
+
+# Virtual environment
+
+.venv/
+venv/
+opd.venv/
+
+# Environment variables and secrets
+
+.env
+*.env
+
+# Django database
+
+db.sqlite3
+
+# IDE
+
+.vscode/

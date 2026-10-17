@@ -1,0 +1,823 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Notification Management
+{% endblock %}
+
+{% block notification_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Notification Management
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.admin-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.admin-profile i{
+
+    font-size:34px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.main-card{
+
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.search-box{
+
+    width:300px;
+
+}
+
+.table{
+
+    margin-top:25px;
+
+}
+
+.table thead{
+
+    background:#eef4ff;
+
+}
+
+.table th{
+
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+.action-btn{
+
+    width:38px;
+    height:38px;
+    border-radius:10px;
+
+}
+
+.message-preview{
+
+    max-width:300px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+h3 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+<div class="header-content">
+
+    <div>
+
+        <h1>
+
+            <i class="bi bi-bell-fill"></i>
+
+            Notification Management
+
+        </h1>
+
+        <p>
+
+            Manage all patient notifications
+        </p>
+
+    </div>
+
+    <div class="admin-profile">
+
+        <span>Administrator</span>
+
+        <i class="bi bi-person-circle"></i>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+{{ message }}
+
+<button
+class="btn-close"
+data-bs-dismiss="alert">
+
+</button>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+<div class="main-card">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+<i class="bi bi-chat-left-text"></i>
+
+Notification List
+
+</h3>
+
+<div class="search-box">
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="bi bi-search"></i>
+
+</span>
+
+<input
+
+type="text"
+
+id="notificationSearch"
+
+class="form-control"
+
+placeholder="Search Notification...">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<table
+
+class="table table-hover align-middle"
+
+id="notificationTable">
+
+<thead>
+
+<tr>
+
+<th onclick="sortTable(0)">Patient</th>
+
+<th>Token</th>
+
+<th onclick="sortTable(2)">Type</th>
+
+<th>Message</th>
+
+<th onclick="sortTable(4)">Created</th>
+
+<th width="120">
+
+Actions
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for notification in notifications %}
+
+<tr>
+
+<td>
+
+<strong>
+
+{{ notification.patient.name }}
+
+</strong>
+
+</td>
+
+<td>
+
+{% if notification.appointment %}
+
+<span class="badge bg-primary">
+
+{{ notification.appointment.token_number }}
+
+</span>
+
+{% else %}
+
+—
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if notification.notification_type == "Booking" %}
+
+<span class="badge bg-primary">
+
+Booking
+
+</span>
+
+{% elif notification.notification_type == "Cancelled" %}
+
+<span class="badge bg-danger">
+
+Cancelled
+
+</span>
+
+{% elif notification.notification_type == "Rescheduled" %}
+
+<span class="badge bg-warning text-dark">
+
+Rescheduled
+
+</span>
+
+{% elif notification.notification_type == "Reminder" %}
+
+<span class="badge bg-info">
+
+Reminder
+
+</span>
+
+{% else %}
+
+<span class="badge bg-secondary">
+
+{{ notification.notification_type }}
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<div class="message-preview">
+
+{{ notification.message|truncatechars:60 }}
+
+</div>
+
+</td>
+
+<td>
+
+{{ notification.created_at|date:"d M Y" }}
+
+<br>
+
+<small class="text-muted">
+
+{{ notification.created_at|time:"h:i A" }}
+
+</small>
+
+</td>
+
+<td>
+
+<button
+
+class="btn btn-primary action-btn viewBtn"
+
+data-message="{{ notification.message|escapejs }}"
+
+data-patient="{{ notification.patient.name }}"
+
+data-type="{{ notification.notification_type }}"
+
+data-date="{{ notification.created_at|date:'d M Y h:i A' }}">
+
+<i class="bi bi-eye"></i>
+
+</button>
+
+<button
+
+class="btn btn-danger action-btn deleteBtn"
+
+data-id="{{ notification.id }}">
+
+<i class="bi bi-trash"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="6">
+
+<div class="text-center py-5">
+
+<i class="bi bi-bell display-2 text-secondary"></i>
+
+<h4 class="mt-3">
+
+No Notifications Found
+
+</h4>
+
+<p class="text-muted">
+
+There are no notifications available.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% if notifications.has_other_pages %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if notifications.has_previous %}
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ notifications.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in notifications.paginator.page_range %}
+
+<li class="page-item {% if notifications.number == page %}active{% endif %}">
+
+<a
+
+class="page-link"
+
+href="?page={{ page }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if notifications.has_next %}
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ notifications.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+<!-- View Notification Modal -->
+
+<div
+
+class="modal fade"
+
+id="notificationModal"
+
+tabindex="-1">
+
+<div class="modal-dialog modal-lg modal-dialog-centered">
+
+<div class="modal-content rounded-4">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Notification Details
+
+</h5>
+
+<button
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<p>
+
+<strong>Patient :</strong>
+
+<span id="modalPatient"></span>
+
+</p>
+
+<p>
+
+<strong>Type :</strong>
+
+<span id="modalType"></span>
+
+</p>
+
+<p>
+
+<strong>Date :</strong>
+
+<span id="modalDate"></span>
+
+</p>
+
+<hr>
+
+<p id="modalMessage"
+
+style="white-space:pre-line;"></p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+//-------------------------------------
+// Live Search
+//-------------------------------------
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const search = document.getElementById("notificationSearch");
+
+    if(search){
+
+        search.addEventListener("keyup", function(){
+
+            let value = this.value.toLowerCase();
+
+            let rows = document.querySelectorAll("#notificationTable tbody tr");
+
+            rows.forEach(function(row){
+
+                row.style.display = row.innerText.toLowerCase().includes(value)
+
+                    ? ""
+
+                    : "none";
+
+            });
+
+        });
+
+    }
+
+});
+
+
+//-------------------------------------
+// View Notification Modal
+//-------------------------------------
+
+document.querySelectorAll(".viewBtn").forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        document.getElementById("modalPatient").innerText =
+            this.dataset.patient;
+
+        document.getElementById("modalType").innerText =
+            this.dataset.type;
+
+        document.getElementById("modalDate").innerText =
+            this.dataset.date;
+
+        document.getElementById("modalMessage").innerText =
+            this.dataset.message;
+
+        let modal = new bootstrap.Modal(
+            document.getElementById("notificationModal")
+        );
+
+        modal.show();
+
+    });
+
+});
+
+
+//-------------------------------------
+// SweetAlert Delete
+//-------------------------------------
+
+document.querySelectorAll(".deleteBtn").forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        let id = this.dataset.id;
+
+        Swal.fire({
+
+            title: "Delete Notification?",
+
+            text: "This notification will be permanently deleted.",
+
+            icon: "warning",
+
+            showCancelButton: true,
+
+            confirmButtonColor: "#dc3545",
+
+            cancelButtonColor: "#0d6efd",
+
+            confirmButtonText: "Delete",
+
+            cancelButtonText: "Cancel"
+
+        })
+
+        .then((result)=>{
+
+            if(result.isConfirmed){
+
+                const form = document.createElement("form");
+
+                form.method = "POST";
+
+                form.action = "/admin-panel/notifications/delete/" + id + "/";
+
+                const csrf = document.createElement("input");
+
+                csrf.type = "hidden";
+
+                csrf.name = "csrfmiddlewaretoken";
+
+                csrf.value = "{{ csrf_token }}";
+
+                form.appendChild(csrf);
+
+                document.body.appendChild(form);
+
+                form.submit();
+
+            }
+
+        });
+
+    });
+
+});
+
+
+//-------------------------------------
+// Table Sorting
+//-------------------------------------
+
+function sortTable(column){
+
+    let table = document.getElementById("notificationTable");
+
+    let switching = true;
+
+    let direction = "asc";
+
+    while(switching){
+
+        switching = false;
+
+        let rows = table.rows;
+
+        for(let i=1;i<rows.length-1;i++){
+
+            let shouldSwitch = false;
+
+            let x = rows[i].getElementsByTagName("TD")[column];
+
+            let y = rows[i+1].getElementsByTagName("TD")[column];
+
+            if(!x || !y){
+
+                continue;
+
+            }
+
+            if(direction === "asc"){
+
+                if(x.innerText.toLowerCase() > y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+            else{
+
+                if(x.innerText.toLowerCase() < y.innerText.toLowerCase()){
+
+                    shouldSwitch = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if(shouldSwitch){
+
+            rows[i].parentNode.insertBefore(
+
+                rows[i+1],
+
+                rows[i]
+
+            );
+
+            switching = true;
+
+        }
+
+        else{
+
+            if(direction === "asc"){
+
+                direction = "desc";
+
+                switching = true;
+
+            }
+
+        }
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

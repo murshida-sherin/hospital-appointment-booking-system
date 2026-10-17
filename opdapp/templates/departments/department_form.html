@@ -1,0 +1,172 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block page_title %}
+{{ title }}
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.form-card{
+
+    background:white;
+    border-radius:22px;
+    padding:35px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.form-title{
+
+    margin-bottom:30px;
+
+}
+
+.form-label{
+
+    font-weight:600;
+    color:#334155;
+
+}
+
+.form-control{
+
+    border-radius:12px;
+    padding:12px;
+
+}
+
+textarea{
+
+    resize:none;
+
+}
+
+.checkbox-list{
+
+    border:1px solid #dee2e6;
+    border-radius:12px;
+    padding:15px;
+    max-height:250px;
+    overflow-y:auto;
+
+}
+
+.form-check{
+
+    margin-bottom:10px;
+
+}
+
+.button-group{
+
+    margin-top:30px;
+    display:flex;
+    gap:15px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+<div class="form-title">
+
+<h2>
+
+<i class="bi bi-diagram-3-fill text-primary"></i>
+
+{{ title }}
+
+</h2>
+
+<p class="text-muted">
+
+Create or update a department.
+
+</p>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="mb-4">
+
+<label class="form-label">
+
+Department Name
+
+</label>
+
+{{ form.name }}
+
+</div>
+
+<div class="mb-4">
+
+<label class="form-label">
+
+Description
+
+</label>
+
+{{ form.description }}
+
+</div>
+
+<div class="mb-4">
+
+<label class="form-label">
+
+Assign Hospitals
+
+</label>
+
+<div class="checkbox-list">
+
+{{ form.hospitals }}
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<button
+type="submit"
+class="btn btn-primary px-4">
+
+<i class="bi bi-check-circle"></i>
+
+Save Department
+
+</button>
+
+<a
+href="{% url 'department_management' %}"
+class="btn btn-secondary px-4">
+
+<i class="bi bi-arrow-left"></i>
+
+Back
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}

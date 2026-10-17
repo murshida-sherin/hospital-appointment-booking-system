@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+    body{
+        font-family:'Manrope',sans-serif;
+        background:#f4f7fc;
+    }
+
+    .department-container{
+        width:95%;
+        max-width:1200px;
+        margin:40px auto;
+    }
+
+    .page-header{
+        background:linear-gradient(135deg,#0d6efd,#2563eb);
+        color:white;
+        padding:35px;
+        border-radius:24px;
+        margin-bottom:35px;
+        box-shadow:0 10px 30px rgba(13,110,253,0.18);
+    }
+
+    .page-header h2{
+        font-size:34px;
+        margin-bottom:10px;
+        font-weight:700;
+    }
+
+    .page-header p{
+        opacity:0.9;
+        font-size:15px;
+    }
+
+    .recommend-box{
+        background:#dcfce7;
+        color:#15803d;
+        padding:16px 20px;
+        border-radius:16px;
+        margin-bottom:28px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        font-weight:600;
+        box-shadow:0 4px 12px rgba(22,163,74,0.12);
+    }
+
+    .department-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+    .department-card{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.05);
+    transition:0.3s;
+    border:1px solid #edf2f7;
+    position:relative;
+    overflow:hidden;
+}
+
+.department-card:hover{
+    transform:translateY(-4px);
+}
+
+    .department-card.recommended{
+        border:2px solid #22c55e;
+        background:#f0fdf4;
+    }
+
+    .recommended-badge{
+        position:absolute;
+        top:18px;
+        right:18px;
+        background:#22c55e;
+        color:white;
+        padding:7px 12px;
+        border-radius:30px;
+        font-size:12px;
+        font-weight:600;
+        display:flex;
+        align-items:center;
+        gap:6px;
+    }
+
+    .department-icon{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    margin-bottom:16px;
+}
+
+    .department-icon i{
+        font-size:24px;
+        color:#0d6efd;
+    }
+
+    .department-card h3{
+        font-size:18px;
+        margin-bottom:14px;
+        color:#0f172a;
+    }
+
+    .department-card p{
+        color:#64748b;
+        font-size:13px;
+        line-height:1.7;
+        margin-bottom:18px;
+    }
+
+    .view-btn{
+        width:100%;
+        border:none;
+        padding:11px;
+        border-radius:14px;
+        background:linear-gradient(135deg,#0d6efd,#2563eb);
+        color:white;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+        transition:0.3s;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:10px;
+        font-family:'Manrope',sans-serif;
+    }
+
+    .view-btn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 10px 20px rgba(37,99,235,0.2);
+    }
+
+    .empty-box{
+        background:white;
+        padding:40px;
+        border-radius:24px;
+        text-align:center;
+        color:#64748b;
+        box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    }
+
+    .empty-box i{
+        font-size:50px;
+        color:#94a3b8;
+        margin-bottom:15px;
+    }
+.page-header{
+    background:linear-gradient(135deg,#0d6efd,#2563eb);
+    color:white;
+    border-radius:24px;
+    margin-bottom:30px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-height:100px;
+    padding:0 0 0 35px;
+    box-shadow:0 8px 24px rgba(13,110,253,0.16);
+}
+
+.header-left{
+    width:40%;
+}
+
+.header-left h2{
+    font-size:28px;
+    margin-bottom:10px;
+    font-weight:700;
+    line-height:1.3;
+}
+
+.header-left p{
+    font-size:14px;
+    opacity:0.9;
+}
+
+.header-right{
+    width:48%;
+    height:140px;
+    margin-right:25px;
+}
+
+.header-right img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:18px;
+}
+
+@media(max-width:1100px){
+
+    .department-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:768px){
+
+    .department-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:520px){
+
+    .department-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+<div class="page-header">
+
+    <div class="header-left">
+
+        <h2>{{ hospital.name }}</h2>
+
+        <p>
+            Browse available departments and doctors
+        </p>
+
+    </div>
+
+</div>
+
+    {% if query and recommended %}
+
+    <div class="recommend-box">
+
+        <i class="bi bi-stars"></i>
+
+        Recommended Department:
+        {{ recommended }}
+
+    </div>
+
+    {% endif %}
+
+    {% if departments %}
+
+    <div class="department-grid">
+
+        {% for d in departments %}
+
+        <div class="department-card
+
+            {% if query and recommended and d.department.name == recommended %}
+                recommended
+            {% endif %}
+        ">
+
+            {% if query and recommended and d.department.name == recommended %}
+
+            <div class="recommended-badge">
+
+                <i class="bi bi-star-fill"></i>
+
+                Recommended
+
+            </div>
+
+            {% endif %}
+
+            <div class="department-icon">
+
+                <i class="bi bi-hospital"></i>
+
+            </div>
+
+            <h3>{{ d.department.name }}</h3>
+
+            <p>
+                View doctors available in this department
+                and book appointments easily.
+            </p>
+
+            <a href="/doctors/{{ hospital.id }}/?department={{ d.department.name }}&lat={{ lat }}&lon={{ lon }}">
+
+                <button class="view-btn">
+
+                    <i class="bi bi-person-lines-fill"></i>
+
+                    View Doctors
+
+                </button>
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-box">
+
+        <i class="bi bi-hospital"></i>
+
+        <h3>No Departments Available</h3>
+
+        <p>
+            No departments are currently available in this hospital.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

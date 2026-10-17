@@ -1,0 +1,760 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Department Management
+{% endblock %}
+
+{% block department_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Department Management
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.admin-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.admin-profile i{
+
+    font-size:34px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.summary-row{
+
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+
+}
+
+.summary-card{
+
+    flex:1;
+    min-width:220px;
+    background:white;
+    border-radius:20px;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+    transition:.3s;
+
+}
+
+.summary-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.summary-card h5{
+
+    color:#64748b;
+    font-size:13px;
+    margin-bottom:8px;
+
+}
+
+.summary-card h2{
+
+    font-size:26px;
+
+}
+
+.summary-card i{
+
+    font-size:30px;
+    color:#0d6efd;
+
+}
+
+.main-card{
+
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.search-box{
+
+    width:300px;
+
+}
+
+.table{
+
+    margin-top:25px;
+
+}
+
+.table thead{
+
+    background:#eef4ff;
+
+}
+
+.table th{
+
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+.action-btn{
+
+    width:38px;
+    height:38px;
+    border-radius:10px;
+
+}
+
+h3 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+<div class="header-content">
+
+    <div>
+
+        <h1>
+
+            <i class="bi bi-diagram-3"></i>
+
+            Department Management
+
+        </h1>
+
+        <p>
+
+            Manage all departments available in hospitals
+
+        </p>
+
+    </div>
+
+    <div class="admin-profile">
+
+        <span>Administrator</span>
+
+        <i class="bi bi-person-circle"></i>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+{{ message }}
+
+<button class="btn-close"
+data-bs-dismiss="alert">
+
+</button>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+<div class="summary-row">
+
+<div class="summary-card">
+
+<div>
+
+<h5>Total Departments</h5>
+
+<h2>{{ department_count }}</h2>
+
+</div>
+
+<i class="bi bi-diagram-3-fill"></i>
+
+</div>
+
+<div class="summary-card">
+
+<div>
+
+<h5>Hospital Departments</h5>
+
+<h2>{{ hospital_department_count }}</h2>
+
+</div>
+
+<i class="bi bi-hospital-fill"></i>
+
+</div>
+
+<div class="summary-card">
+
+<div>
+
+<h5>Total Doctors</h5>
+
+<h2>{{ doctor_count }}</h2>
+
+</div>
+
+<i class="bi bi-person-badge-fill"></i>
+
+</div>
+
+</div>
+
+<div class="main-card">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+<i class="bi bi-list-ul"></i>
+
+Department List
+
+</h3>
+
+<a
+href="{% url 'department_add' %}"
+class="btn btn-primary rounded-pill px-4">
+
+<i class="bi bi-plus-circle"></i>
+
+Add Department
+
+</a>
+
+</div>
+
+<div class="search-box">
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="bi bi-search"></i>
+
+</span>
+
+<input
+type="text"
+id="departmentSearch"
+class="form-control"
+placeholder="Search Department...">
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<table
+class="table table-hover align-middle"
+id="departmentTable">
+
+<thead>
+
+<tr>
+
+<th onclick="sortTable(0)">
+
+Department
+
+<i class="bi bi-arrow-down-up"></i>
+
+</th>
+
+<th>
+
+Description
+
+</th>
+
+<th onclick="sortTable(2)">
+
+Hospitals
+
+<i class="bi bi-arrow-down-up"></i>
+
+</th>
+
+<th onclick="sortTable(3)">
+
+Doctors
+
+<i class="bi bi-arrow-down-up"></i>
+
+</th>
+
+<th width="170">
+
+Actions
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for department in departments %}
+
+<tr>
+
+    <td>
+
+        <strong>
+
+            {{ department.name }}
+
+        </strong>
+
+    </td>
+
+    <td>
+
+        {% if department.description %}
+
+            {{ department.description|truncatechars:60 }}
+
+        {% else %}
+
+            <span class="text-muted">
+
+                No description
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        <span class="badge bg-primary">
+
+            {{ department.hospital_count }}
+
+        </span>
+
+    </td>
+
+    <td>
+
+        <span class="badge bg-success">
+
+            {{ department.doctor_count }}
+
+        </span>
+
+    </td>
+
+    <td>
+
+        <a
+            href="{% url 'department_edit' department.id %}"
+            class="btn btn-warning action-btn">
+
+            <i class="bi bi-pencil-square"></i>
+
+        </a>
+
+        <button
+            class="btn btn-danger action-btn deleteBtn"
+            data-id="{{ department.id }}"
+            data-name="{{ department.name }}">
+
+            <i class="bi bi-trash"></i>
+
+        </button>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="5">
+
+<div class="text-center py-5">
+
+<i class="bi bi-diagram-3 display-3 text-secondary"></i>
+
+<h4 class="mt-3">
+
+No Departments Found
+
+</h4>
+
+<p class="text-muted">
+
+Click <strong>Add Department</strong> to create your first department.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% if departments.has_other_pages %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if departments.has_previous %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ departments.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in departments.paginator.page_range %}
+
+<li class="page-item {% if departments.number == page %}active{% endif %}">
+
+<a
+class="page-link"
+href="?page={{ page }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if departments.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ departments.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+//----------------------------------------------
+// Live Search
+//----------------------------------------------
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const search=document.getElementById("departmentSearch");
+
+if(search){
+
+search.addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase();
+
+let rows=document.querySelectorAll("#departmentTable tbody tr");
+
+rows.forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(value)
+
+? ""
+
+: "none";
+
+});
+
+});
+
+}
+
+});
+
+
+//----------------------------------------------
+// SweetAlert Delete
+//----------------------------------------------
+
+document.querySelectorAll(".deleteBtn").forEach(function(button){
+
+button.addEventListener("click",function(){
+
+let id=this.dataset.id;
+
+let name=this.dataset.name;
+
+Swal.fire({
+
+title:"Delete Department?",
+
+text:"Are you sure you want to delete '"+name+"' ?",
+
+icon:"warning",
+
+showCancelButton:true,
+
+confirmButtonColor:"#dc3545",
+
+cancelButtonColor:"#0d6efd",
+
+confirmButtonText:"Delete",
+
+cancelButtonText:"Cancel"
+
+})
+
+.then((result)=>{
+
+if(result.isConfirmed){
+
+const form=document.createElement("form");
+
+form.method="POST";
+
+form.action="/admin-panel/departments/delete/"+id+"/";
+
+const csrf=document.createElement("input");
+
+csrf.type="hidden";
+
+csrf.name="csrfmiddlewaretoken";
+
+csrf.value="{{ csrf_token }}";
+
+form.appendChild(csrf);
+
+document.body.appendChild(form);
+
+form.submit();
+
+}
+
+});
+
+});
+
+});
+
+
+//----------------------------------------------
+// Table Sorting
+//----------------------------------------------
+
+function sortTable(column){
+
+let table=document.getElementById("departmentTable");
+
+let switching=true;
+
+let direction="asc";
+
+while(switching){
+
+switching=false;
+
+let rows=table.rows;
+
+for(let i=1;i<rows.length-1;i++){
+
+let shouldSwitch=false;
+
+let x=rows[i].getElementsByTagName("TD")[column];
+
+let y=rows[i+1].getElementsByTagName("TD")[column];
+
+if(!x || !y){
+
+continue;
+
+}
+
+if(direction==="asc"){
+
+if(x.innerText.toLowerCase()>y.innerText.toLowerCase()){
+
+shouldSwitch=true;
+
+break;
+
+}
+
+}
+
+else{
+
+if(x.innerText.toLowerCase()<y.innerText.toLowerCase()){
+
+shouldSwitch=true;
+
+break;
+
+}
+
+}
+
+}
+
+if(shouldSwitch){
+
+rows[i].parentNode.insertBefore(rows[i+1],rows[i]);
+
+switching=true;
+
+}
+
+else{
+
+if(direction==="asc"){
+
+direction="desc";
+
+switching=true;
+
+}
+
+}
+
+}
+
+}
+
+</script>
+
+{% endblock %}

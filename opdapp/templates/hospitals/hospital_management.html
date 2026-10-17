@@ -1,0 +1,864 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+Hospital Management
+{% endblock %}
+
+{% block hospital_active %}
+active
+{% endblock %}
+
+{% block page_title %}
+Hospital Management
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#0d6efd,#3b82f6);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(13,110,253,.15);
+
+}
+
+.header-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.admin-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.admin-profile i{
+
+    font-size:34px;
+
+}
+
+.dashboard-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+.dashboard-header h1 i{
+
+    font-size:24px;
+
+}
+
+.dashboard-header p{
+
+    margin:0;
+    opacity:.9;
+
+}
+
+.summary-row{
+
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+
+}
+
+.summary-card{
+
+    flex:1;
+    min-width:230px;
+    background:white;
+    border-radius:20px;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+    transition:.3s;
+
+}
+
+.summary-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.summary-card h5{
+
+    color:#64748b;
+    font-size:13px;
+    margin-bottom:8px;
+
+}
+
+.summary-card h2{
+
+    font-size:26px;
+    color:#0f172a;
+
+}
+
+.summary-card i{
+
+    font-size:30px;
+    color:#0d6efd;
+
+}
+
+.main-card{
+
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.search-box{
+
+    width:300px;
+
+}
+
+.search-box .form-control{
+
+    border-radius:0 12px 12px 0;
+
+}
+
+.search-box .input-group-text{
+
+    border-radius:12px 0 0 12px;
+
+}
+
+.table{
+
+    margin-top:25px;
+
+}
+
+.table thead{
+
+    background:#eef4ff;
+
+}
+
+.table th{
+
+    border:none;
+    color:#334155;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+.table tbody tr{
+
+    transition:.3s;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+.hospital-img{
+
+    width:65px;
+    height:65px;
+    border-radius:12px;
+    object-fit:cover;
+    cursor:pointer;
+
+}
+
+.action-btn{
+
+    width:38px;
+    height:38px;
+    border-radius:10px;
+
+}
+
+h3 i{
+
+    font-size:20px !important;
+
+    margin-right:8px;
+
+}
+
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <h1>
+
+        <i class="bi bi-building"></i>
+
+        Hospital Management
+
+    </h1>
+
+    <p>
+
+        Manage all hospitals registered in the Smart OPD Booking System.
+
+    </p>
+
+</div>
+
+{% if messages %}
+
+    {% for message in messages %}
+
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+        {{ message }}
+
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+
+    </div>
+
+    {% endfor %}
+
+{% endif %}
+
+<div class="summary-row">
+
+    <div class="summary-card">
+
+        <div>
+
+            <h5>Total Hospitals</h5>
+
+            <h2>{{ hospital_count }}</h2>
+
+        </div>
+
+        <i class="bi bi-building-fill"></i>
+
+    </div>
+
+    <div class="summary-card">
+
+        <div>
+
+            <h5>Average Rating</h5>
+
+            <h2>{{ average_rating }}</h2>
+
+        </div>
+
+        <i class="bi bi-star-fill"></i>
+
+    </div>
+
+    <div class="summary-card">
+
+        <div>
+
+            <h5>Total Reviews</h5>
+
+            <h2>{{ total_reviews }}</h2>
+
+        </div>
+
+        <i class="bi bi-chat-left-text-fill"></i>
+
+    </div>
+
+</div>
+
+<div class="main-card">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+        <h3>
+
+            <i class="bi bi-list-ul"></i>
+
+            Hospital List
+
+        </h3>
+
+        <a href="{% url 'hospital_add' %}"
+
+           class="btn btn-primary rounded-pill px-4">
+
+            <i class="bi bi-plus-circle"></i>
+
+            Add Hospital
+
+        </a>
+
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+        <div class="search-box">
+
+            <div class="input-group">
+
+                <span class="input-group-text">
+
+                    <i class="bi bi-search"></i>
+
+                </span>
+
+                <input
+                    type="text"
+                    id="hospitalSearch"
+                    class="form-control"
+                    placeholder="Search Hospital...">
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table
+            class="table align-middle table-hover"
+            id="hospitalTable">
+
+            <thead>
+
+            <tr>
+
+                <th>Image</th>
+
+                <th onclick="sortTable(1)">
+
+                    Hospital
+
+                    <i class="bi bi-arrow-down-up"></i>
+
+                </th>
+
+                <th onclick="sortTable(2)">
+
+                    City
+
+                    <i class="bi bi-arrow-down-up"></i>
+
+                </th>
+
+                <th>Location</th>
+
+                <th onclick="sortTable(4)">
+
+                    Rating
+
+                    <i class="bi bi-arrow-down-up"></i>
+
+                </th>
+
+                <th onclick="sortTable(5)">
+
+                    Reviews
+
+                    <i class="bi bi-arrow-down-up"></i>
+
+                </th>
+
+                <th width="170">
+
+                    Actions
+
+                </th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+{% for hospital in hospitals %}
+
+<tr>
+
+    <td>
+
+        {% if hospital.image %}
+
+        <img
+            src="{{ hospital.image.url }}"
+            class="hospital-img"
+            data-bs-toggle="modal"
+            data-bs-target="#imageModal"
+            onclick="showImage('{{ hospital.image.url }}')">
+
+        {% else %}
+
+        <div
+            class="d-flex justify-content-center align-items-center bg-light rounded"
+            style="width:65px;height:65px;">
+
+            <i class="bi bi-building fs-3 text-secondary"></i>
+
+        </div>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        <strong>
+
+            {{ hospital.name }}
+
+        </strong>
+
+    </td>
+
+    <td>
+
+        {{ hospital.city }}
+
+    </td>
+
+    <td>
+
+        {{ hospital.location_name }}
+
+    </td>
+
+    <td>
+
+        <span class="badge bg-warning text-dark fs-6">
+
+            <i class="bi bi-star-fill"></i>
+
+            {{ hospital.rating }}
+
+        </span>
+
+    </td>
+
+    <td>
+
+        <span class="badge bg-primary">
+
+            {{ hospital.total_reviews }}
+
+        </span>
+
+    </td>
+
+    <td>
+
+        <a
+            href="{% url 'hospital_edit' hospital.id %}"
+            class="btn btn-warning action-btn">
+
+            <i class="bi bi-pencil-square"></i>
+
+        </a>
+
+        <button
+            class="btn btn-danger action-btn deleteBtn"
+            data-id="{{ hospital.id }}"
+            data-name="{{ hospital.name }}">
+
+            <i class="bi bi-trash"></i>
+
+        </button>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="7">
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-building display-3 text-secondary"></i>
+
+            <h4 class="mt-3">
+
+                No Hospitals Found
+
+            </h4>
+
+            <p class="text-muted">
+
+                Click <strong>Add Hospital</strong> to create your first hospital.
+
+            </p>
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- Pagination -->
+
+{% if hospitals.has_other_pages %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if hospitals.has_previous %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ hospitals.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in hospitals.paginator.page_range %}
+
+<li class="page-item {% if hospitals.number == page %}active{% endif %}">
+
+<a
+class="page-link"
+href="?page={{ page }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if hospitals.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page={{ hospitals.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+<!-- Image Preview Modal -->
+
+<div
+class="modal fade"
+id="imageModal"
+tabindex="-1">
+
+<div class="modal-dialog modal-lg modal-dialog-centered">
+
+<div class="modal-content border-0 rounded-4">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Hospital Image
+
+</h5>
+
+<button
+class="btn-close"
+data-bs-dismiss="modal">
+
+</button>
+
+</div>
+
+<div class="modal-body text-center">
+
+<img
+id="previewImage"
+class="img-fluid rounded-4">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{%endblock%}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+//--------------------------------------------------
+// Live Search
+//--------------------------------------------------
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const search=document.getElementById("hospitalSearch");
+
+if(search){
+
+search.addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase();
+
+let rows=document.querySelectorAll("#hospitalTable tbody tr");
+
+rows.forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(value)
+
+? ""
+
+: "none";
+
+});
+
+});
+
+}
+
+});
+
+
+//--------------------------------------------------
+// Image Preview
+//--------------------------------------------------
+
+function showImage(image){
+
+document.getElementById("previewImage").src=image;
+
+}
+
+
+//--------------------------------------------------
+// Delete Confirmation
+//--------------------------------------------------
+
+document.querySelectorAll(".deleteBtn").forEach(function(button){
+
+button.addEventListener("click",function(){
+
+let id=this.dataset.id;
+
+let name=this.dataset.name;
+
+Swal.fire({
+
+title:"Delete Hospital?",
+
+text:"Are you sure you want to delete '"+name+"' ?",
+
+icon:"warning",
+
+showCancelButton:true,
+
+confirmButtonColor:"#dc3545",
+
+cancelButtonColor:"#0d6efd",
+
+confirmButtonText:"Delete",
+
+cancelButtonText:"Cancel"
+
+})
+
+.then((result)=>{
+
+if(result.isConfirmed){
+
+const form=document.createElement("form");
+
+form.method="POST";
+
+form.action="/admin-panel/hospitals/delete/"+id+"/";
+
+const csrf=document.createElement("input");
+
+csrf.type="hidden";
+
+csrf.name="csrfmiddlewaretoken";
+
+csrf.value="{{ csrf_token }}";
+
+form.appendChild(csrf);
+
+document.body.appendChild(form);
+
+form.submit();
+
+}
+
+});
+
+});
+
+});
+
+
+//--------------------------------------------------
+// Table Sorting
+//--------------------------------------------------
+
+function sortTable(column){
+
+let table=document.getElementById("hospitalTable");
+
+let switching=true;
+
+let direction="asc";
+
+while(switching){
+
+switching=false;
+
+let rows=table.rows;
+
+for(let i=1;i<rows.length-1;i++){
+
+let shouldSwitch=false;
+
+let x=rows[i].getElementsByTagName("TD")[column];
+
+let y=rows[i+1].getElementsByTagName("TD")[column];
+
+if(!x || !y){
+
+continue;
+
+}
+
+if(direction==="asc"){
+
+if(x.innerText.toLowerCase()>y.innerText.toLowerCase()){
+
+shouldSwitch=true;
+
+break;
+
+}
+
+}
+
+else{
+
+if(x.innerText.toLowerCase()<y.innerText.toLowerCase()){
+
+shouldSwitch=true;
+
+break;
+
+}
+
+}
+
+}
+
+if(shouldSwitch){
+
+rows[i].parentNode.insertBefore(rows[i+1],rows[i]);
+
+switching=true;
+
+}
+
+else{
+
+if(direction==="asc"){
+
+direction="desc";
+
+switching=true;
+
+}
+
+}
+
+}
+
+}
+
+</script>
+
+{% endblock %}

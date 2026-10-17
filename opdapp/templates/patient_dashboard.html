@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div style="
+    max-width:1100px;
+    margin:40px auto;
+    padding:0 20px;
+">
+
+    <!-- PAGE HEADER -->
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:14px;
+        margin-bottom:30px;
+    ">
+
+        <div style="
+            width:60px;
+            height:60px;
+            border-radius:18px;
+            background:#eef5ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        ">
+
+            <i class="bi bi-calendar2-check-fill"
+               style="
+                color:#1e4fd8;
+                font-size:28px;
+               ">
+            </i>
+
+        </div>
+
+        <div>
+
+            <h2 style="
+                margin:0;
+                color:#1e4fd8;
+                font-size:34px;
+                font-weight:700;
+                font-family:'poppins';
+            ">
+                My Appointments
+            </h2>
+
+            <p style="
+                margin-top:5px;
+                color:#666;
+                font-size:15px;
+            ">
+                View and manage your booked appointments
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- APPOINTMENTS -->
+
+    {% if appointments %}
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:24px;
+        ">
+
+        {% for a in appointments %}
+
+        <div style="
+            background:white;
+            border-radius:24px;
+            padding:25px;
+            box-shadow:0 10px 24px rgba(0,0,0,0.06);
+            transition:0.3s ease;
+            border-top:5px solid #1e4fd8;
+        ">
+
+            <!-- HOSPITAL -->
+
+            <p style="
+                color:#1e4fd8;
+                font-size:15px;
+                font-weight:700;
+                margin-bottom:14px;
+            ">
+
+                <i class="bi bi-hospital"
+                   style="margin-right:6px;"></i>
+
+                {{ a.doctor.hospital.name }}
+
+            </p>
+
+            <!-- DOCTOR -->
+
+            <h3 style="
+                margin:0 0 14px 0;
+                color:#222;
+                font-size:24px;
+            ">
+                 {{ a.doctor.name }}
+            </h3>
+
+            <!-- DETAILS -->
+
+            <div style="
+                background:#f7faff;
+                border-radius:16px;
+                padding:18px;
+                margin-bottom:22px;
+            ">
+
+                <p><b>Patient:</b> {{ a.patient.name }}</p>
+
+                <p><b>Date:</b> {{ a.appointment_date }}</p>
+
+                <p><b>Time:</b> {{ a.time_slot }}</p>
+
+                <p><b>Token:</b> #{{ a.token_number }}</p>
+
+            </div>
+
+            <!-- STATUS -->
+
+            <div style="margin-bottom:20px;">
+
+                {% if a.status == "Booked" %}
+                    <span style="
+                        display:inline-flex;
+                        align-items:center;
+                        gap:8px;
+                        background:#eafaf1;
+                        color:#14a44d;
+                        padding:10px 18px;
+                        border-radius:50px;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                    Booked
+
+            </span>
+
+                {% elif a.status == "Rescheduled" %}
+
+                    <span style="
+                        background:#fff4e5;
+                        color:#ff9800;
+                        padding:8px 14px;
+                        border-radius:30px;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+                        Rescheduled
+                    </span>
+
+                    <p style="
+                        margin-top:10px;
+                        color:#666;
+                        font-size:14px;
+                    ">
+                        From {{ a.rescheduled_from }}
+                    </p>
+
+                {% elif a.status == "Cancelled" %}
+
+                    <span style="
+                        background:#ffe8e8;
+                        color:#e63946;
+                        padding:8px 14px;
+                        border-radius:30px;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+                        Cancelled
+                    </span>
+
+                {% elif a.status == "Completed" %}
+
+                    <span style="
+                        background:#e8f1ff;
+                        color:#1e4fd8;
+                        padding:8px 14px;
+                        border-radius:30px;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+                        Completed
+                    </span>
+
+                {% if a.status == "Completed" %}
+
+    {% if a.rating %}
+
+        <div style="
+            margin-top:18px;
+            background:#eafaf1;
+            color:#14a44d;
+            padding:12px;
+            border-radius:14px;
+            text-align:center;
+            font-weight:600;
+        ">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            Review Submitted
+
+        </div>
+
+    {% else %}
+
+        <a href="{% url 'rate_appointment' a.id %}"
+           style="
+                text-decoration:none;
+                display:block;
+                margin-top:18px;
+           ">
+
+            <button style="
+                width:100%;
+                background:#1e4fd8;
+                color:white;
+                border:none;
+                padding:14px;
+                border-radius:16px;
+                font-size:15px;
+                font-weight:600;
+                cursor:pointer;
+            ">
+
+                <i class="bi bi-star-fill"
+                   style="margin-right:8px;">
+                </i>
+
+                Rate Visit
+
+            </button>
+
+        </a>
+
+    {% endif %}
+
+{% endif %}
+
+                {% elif a.status == "Missed" %}
+
+                    <span style="
+                        background:#fff4cc;
+                        color:#a16207;
+                        padding:8px 14px;
+                        border-radius:30px;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+                        Missed
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            <!-- CANCEL BUTTON -->
+
+            {% if a.can_cancel %}
+
+            <a href="{% url 'cancel_appointment' a.id %}"
+               onclick="return confirm('Are you sure you want to cancel this appointment?')"
+               style="text-decoration:none;">
+
+                <button style="
+                    width:100%;
+                    background:white;
+                    color:#e63946;
+                    border:2px solid #ffd6d9;
+                    padding:14px;
+                    border-radius:16px;
+                    font-size:15px;
+                    font-weight:600;
+                    cursor:pointer;
+                    transition:0.3s;
+                ">
+
+            <i class="bi bi-x-circle"
+                style="margin-right:8px;"></i>
+
+            Cancel Appointment
+
+        </button>
+
+        </a>
+
+        {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div style="
+            background:white;
+            border-radius:24px;
+            padding:70px 30px;
+            text-align:center;
+            box-shadow:0 10px 24px rgba(0,0,0,0.06);
+        ">
+
+            <div style="
+                width:100px;
+                height:100px;
+                border-radius:50%;
+                background:#eef5ff;
+                margin:auto;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                margin-bottom:25px;
+            ">
+
+                <i class="bi bi-calendar-x"
+                   style="
+                    color:#1e4fd8;
+                    font-size:42px;
+                   ">
+                </i>
+
+            </div>
+
+            <h3 style="
+                margin-bottom:10px;
+                color:#333;
+            ">
+                No Appointments Found
+            </h3>
+
+            <p style="
+                color:#777;
+                font-size:15px;
+            ">
+                Your booked appointments will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

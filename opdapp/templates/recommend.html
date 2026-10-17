@@ -1,0 +1,595 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load static %}
+
+<style>
+.map-link {
+    color: gray;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.map-link:hover {
+    color: #2f6bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+</style>
+
+<style>
+
+.hero-section:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+</style>
+
+<style>
+
+.hospital-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 18px 35px rgba(0,0,0,0.12);
+}
+
+</style>
+
+<style>
+
+.chip-btn{
+    padding:10px 18px;
+    border:none;
+    border-radius:30px;
+    background:#eef5ff;
+    color:#1e4fd8;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.chip-btn:hover{
+    background:#1e4fd8;
+    color:white;
+}
+
+</style>
+
+<script>
+function toggleDropdown() {
+    const dropdown = document.getElementById("userDropdown");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('#userDropdown') && !event.target.closest('span')) {
+        document.getElementById("userDropdown").style.display = "none";
+    }
+}
+</script>
+
+<body style="
+    font-family:'Manrope', sans-serif;
+    margin:0;
+    background:#eef5ff;
+">
+
+<div style="padding:30px;">
+
+<!-- HERO SECTION -->
+
+<div class="hero-section" style="
+    display:flex;
+    transition:0.3s;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(to right, #ffffff, #f4f8ff);
+    border-radius:24px;
+    padding:35px 45px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom:40px;
+    overflow:hidden;
+">
+
+    <!-- LEFT SIDE -->
+
+    <div style="max-width:520px;">
+        
+        <h1 style="
+            font-size:50px;
+            font-weight:700;
+            letter-spacing:-1px;
+            line-height:1.15;
+            margin-bottom:20px;
+            color:#111;
+            font-family:'poppins';
+        ">
+            Find The Right Hospital Easily
+        </h1>
+
+        <p style="
+            font-size:16px;
+            color:#666;
+            margin-bottom:35px;
+        ">
+            Search hospitals, departments and symptoms quickly using our OPD booking system.
+        </p>
+
+        <!-- SEARCH -->
+
+        <form method="GET" onsubmit="setLocation()" style="
+            position:relative;
+            display:flex;
+            gap:15px;
+        ">
+
+            <!-- LOCATION -->
+            <input type="hidden" name="lat" id="latField">
+            <input type="hidden" name="lon" id="lonField">
+
+            <!-- SEARCH BOX -->
+
+            <input 
+                
+                type="text" 
+                name="query" 
+                id="searchBox"
+                placeholder="Search by hospitals, departments,doctors or symptoms"
+
+                style="
+                    padding:18px 22px;
+                    border-radius:14px;
+                    border:1px solid #dbe7ff;
+                    font-size:16px;
+                    background:white;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.03);
+                    
+                    flex:1;
+                    padding:16px;
+                    border-radius:10px;
+                    border:1px solid #ccc;
+                    font-size:16px;
+                    outline:none;
+                "
+            >
+
+            <button class="main-btn"
+                background:linear-gradient(135deg, #2f6bff, #5b8cff);
+                border:none;
+                padding:16px 28px;
+                border-radius:14px;
+                font-weight:600;
+                box-shadow:0 4px 10px rgba(47,107,255,0.25);>
+            Search
+            </button>
+
+            <!-- SUGGESTIONS -->
+
+            <div id="suggestions" style="
+                border:1px solid #ddd;
+                width:100%;
+                background:white;
+                position:absolute;
+                top:70px;
+                left:0;
+                z-index:9999;
+                border-radius:10px;
+                box-shadow:0 4px 10px rgba(0,0,0,0.1);
+                max-height:200px;
+                overflow-y:auto;
+            "></div>
+
+        </form>
+
+        <!-- RESULT INFO -->
+
+        {% if query and recommended %}
+            <p style="
+                color:#666;
+                margin-top:25px;
+                font-size:16px;
+            ">
+            <br>
+        
+            Showing results for: 
+                <b style="color:#2f6bff;">
+                    {{ recommended }}
+                </b>
+            </p>
+        {% endif %}
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div style="
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+">
+
+    <img 
+        src="{% static 'images/doctor3.png' %}"
+
+        style="
+            width:320px;
+            max-width:100%;
+            margin-left:-1px;
+            background:none;
+            mix-blend-mode:multiply;
+            transform:scale(1.15);
+        "
+    >
+
+</div>
+
+</div>
+
+<div style="
+    height:1px;
+    background:#dbe4f3;
+    margin:10px 0 25px 0;
+"></div>
+
+<!-- RESULTS TITLE -->
+
+<div style="
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin:25px 0 10px 0;
+">
+
+    <!-- ALL HOSPITALS -->
+
+    <a href="/"
+       style="text-decoration:none;">
+
+        <div style="
+            padding:10px 18px;
+            border-radius:30px;
+
+            {% if not request.GET.department %}
+                background:#2f6bff;
+                color:white;
+            {% else %}
+                background:white;
+                color:#333;
+            {% endif %}
+
+            font-weight:600;
+            box-shadow:0 3px 10px rgba(0,0,0,0.06);
+            transition:0.3s;
+            font-size:15px;
+        ">
+
+            <i class="bi bi-hospital"
+               style="margin-right:6px;"></i>
+
+            All Hospitals
+
+        </div>
+
+    </a>
+
+    <!-- DEPARTMENTS -->
+
+    {% for dept in departments|slice:":4" %}
+
+    <a href="/?department={{ dept.name }}"
+       style="text-decoration:none;">
+
+        <div style="
+            padding:10px 18px;
+            border-radius:30px;
+
+            {% if request.GET.department == dept.name %}
+                background:#2f6bff;
+                color:white;
+            {% else %}
+                background:white;
+                color:#333;
+            {% endif %}
+
+            font-weight:600;
+            box-shadow:0 3px 10px rgba(0,0,0,0.06);
+            transition:0.3s;
+            font-size:15px;
+        ">
+
+            {% if dept.name == "Cardiology" %}
+                <i class="bi bi-heart-pulse"
+                   style="margin-right:6px;"></i>
+
+            {% elif dept.name == "Neurology" %}
+                <i class="bi bi-activity"
+                   style="margin-right:6px;"></i>
+
+            {% elif dept.name == "Orthopedics" %}
+                <i class="bi bi-person-standing"
+                   style="margin-right:6px;"></i>
+
+            {% elif dept.name == "Pediatrics" %}
+                <i class="bi bi-emoji-smile"
+                   style="margin-right:6px;"></i>
+
+            {% elif dept.name == "ENT" %}
+                <i class="bi bi-ear"
+                   style="margin-right:6px;"></i>
+
+            {% elif dept.name == "Dermatology" %}
+                <i class="bi bi-droplet"
+                   style="margin-right:6px;"></i>
+
+            {% else %}
+                <i class="bi bi-hospital"
+                   style="margin-right:6px;"></i>
+            {% endif %}
+
+            {{ dept.name }}
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+<!--result title end of code-->
+
+<h2 style="
+    margin-bottom:20px;
+    color:#222;
+">
+
+    {% if query %}
+<h2 style="margin-top:20px;">
+    Results for "{{ query }}"
+</h2>
+{% endif %}
+
+</h2>
+
+{% if not hospitals %}
+    <p>No hospitals found.</p>
+{% endif %}
+
+{% if searched_doctor %}
+
+<div style="
+    background:#eef5ff;
+    border-left:5px solid #2563eb;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+">
+
+    <h4 style="margin:0;color:#2563eb;">
+        Doctor Found
+    </h4>
+
+    <p style="margin-top:8px;">
+        {{ searched_doctor }}
+        works in
+        <b>{{ searched_department }}</b>
+        department.
+    </p>
+
+</div>
+
+{% endif %}
+
+<!-- 🔹 HOSPITAL CARDS -->
+ {% if hospitals %}
+
+<div class="hospital-card" style="
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:20px;
+    margin-top:20px;
+    transition:0.3s ease;
+">
+
+    {% for h in hospitals %}
+    <div style="
+        border:1px solid #ccc;
+        padding:15px;
+        border-radius:10px;
+        box-shadow:2px 2px 8px #ddd;
+    ">
+
+    {% if h.image %}
+
+<img 
+    src="{{ h.image.url }}"
+
+    style="
+        width:100%;
+        height:180px;
+        object-fit:cover;
+        border-radius:14px 14px 0 0;
+        margin-bottom:15px;
+    "
+>
+
+{% endif %}
+
+        <h3>{{ h.name }}</h3>
+
+        <p style="
+    color:#666;
+    font-size:14px;
+    margin:8px 0 12px 0;
+">
+
+    {% for dept in h.hospitaldepartment_set.all|slice:":2" %}
+
+        {{ dept.department.name }}
+        {% if not forloop.last %} • {% endif %}
+
+    {% endfor %}
+
+</p>
+
+        <p>⭐ Rating: {{ h.rating }}</p>
+
+{% if h.distance is not None %}
+<i class="bi bi-geo-alt-fill"
+   style="color:#ef4444;"></i>
+     {{ h.location_name }} • 
+    <a href="https://www.google.com/maps?q={{ h.latitude }},{{ h.longitude }}" 
+       target="_blank" 
+       class="map-link">
+        {{ h.distance|floatformat:1 }} km away
+    </a>
+</p>
+{% endif %}
+
+    <a href="/departments/{{ h.id }}/?query={{ query }}&lat={{ lat }}&lon={{ lon }}{% if recommended %}&recommended={{ recommended }}{% endif %}">
+    <button class="main-btn">
+    View Departments
+</button>
+    </a>
+    </div>
+    {% endfor %}
+
+</div>
+
+
+</div>
+
+{% else %}
+
+<!-- 🔹 NO HOSPITAL FOUND -->
+
+<div style="
+    background:white;
+    padding:35px;
+    border-radius:20px;
+    text-align:center;
+    margin-top:40px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.06);
+">
+
+    <h3 style="
+        color:#dc2626;
+        margin-bottom:10px;
+        font-size:28px;
+    ">
+        Hospital Not Available
+    </h3>
+
+    <p style="
+        color:#64748b;
+        font-size:16px;
+    ">
+        No hospitals found for "{{ query }}"
+    </p>
+
+</div>
+
+{% endif %}
+
+<!-- 🔹 JS -->
+
+<script>
+let debounceTimer;
+
+const searchBox = document.getElementById("searchBox");
+const suggestionBox = document.getElementById("suggestions");
+
+// 🔹 Auto suggestions
+searchBox.addEventListener("keyup", function () {
+    clearTimeout(debounceTimer);
+
+    let query = this.value;
+
+    debounceTimer = setTimeout(() => {
+
+        if (query.length < 2) {
+            suggestionBox.innerHTML = "";
+            return;
+        }
+
+        fetch(`/search-suggestions/?q=${query}`)
+            .then(res => res.json())
+            .then(data => {
+                suggestionBox.innerHTML = "";
+
+                data.results.forEach(item => {
+                    let div = document.createElement("div");
+                    div.innerText = item;
+                    div.style.padding = "8px";
+                    div.style.cursor = "pointer";
+
+                    div.onmouseover = () => div.style.background = "#f0f0f0";
+                    div.onmouseout = () => div.style.background = "white";
+
+                    div.onclick = function () {
+                        searchBox.value = item;
+                        suggestionBox.innerHTML = "";
+                        searchBox.form.submit(); // 🔥 instant search
+                    };
+
+                    suggestionBox.appendChild(div);
+                });
+            });
+
+    }, 300);
+});
+
+// 🔹 Enter key submit
+searchBox.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        this.form.submit();
+    }
+});
+
+// 🔹 Set location before submit
+function setLocation() {
+    document.getElementById("latField").value = localStorage.getItem("lat");
+    document.getElementById("lonField").value = localStorage.getItem("lon");
+}
+
+// 🔹 Get location once
+if (!localStorage.getItem("lat")) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        localStorage.setItem("lat", pos.coords.latitude);
+        localStorage.setItem("lon", pos.coords.longitude);
+        location.reload();
+    });
+}
+</script>
+<script>
+const lat = localStorage.getItem("lat");
+const lon = localStorage.getItem("lon");
+
+// If location exists → attach to URL
+if (lat && lon) {
+    const url = new URL(window.location.href);
+
+    if (!url.searchParams.get("lat")) {
+        url.searchParams.set("lat", lat);
+        url.searchParams.set("lon", lon);
+        window.location.href = url.toString();
+    }
+}
+
+// If not stored → get GPS
+else {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        localStorage.setItem("lat", pos.coords.latitude);
+        localStorage.setItem("lon", pos.coords.longitude);
+        location.reload();
+    });
+}
+</script>
+
+</body>
+</html>
+
+{% endblock %}
